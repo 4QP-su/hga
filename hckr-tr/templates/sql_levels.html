@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Mission Selection | SQL Lab</title>
+    <style>
+        :root {
+            --neon-green: #00ff41;
+            --soft-green: rgba(0, 255, 65, 0.15);
+            --bg-black: #050505;
+            --card-bg: #0a0a0a;
+            --border-dim: #004411;
+            --text-dim: #008f23;
+        }
+
+        body {
+            background-color: var(--bg-black);
+            color: var(--neon-green);
+            font-family: 'Courier New', monospace;
+            padding: 40px;
+            margin: 0;
+            /* Плавное появление всей страницы */
+            animation: fadeInPage 0.8s ease-out;
+        }
+
+        @keyframes fadeInPage {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.8rem;
+            text-transform: uppercase;
+            letter-spacing: 6px;
+            margin-bottom: 50px;
+            border-bottom: 1px solid var(--border-dim);
+            padding-bottom: 20px;
+            transition: 0.5s;
+        }
+
+        .levels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .level-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-dim);
+            padding: 30px;
+            text-decoration: none;
+            color: var(--neon-green);
+            border-radius: 12px;
+            /* Мягкие углы */
+            display: flex;
+            flex-direction: column;
+            /* Плавный переход для всех свойств */
+            transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1),
+                box-shadow 0.4s ease,
+                border-color 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Эффект при наведении — карточка "всплывает" */
+        .level-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--neon-green);
+            box-shadow: 0 10px 30px rgba(0, 255, 65, 0.1);
+        }
+
+        /* Мягкий градиент внутри при наведении */
+        .level-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, transparent 0%, var(--soft-green) 100%);
+            opacity: 0;
+            transition: 0.4s;
+        }
+
+        .level-card:hover::after {
+            opacity: 1;
+        }
+
+        .level-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #fff;
+            z-index: 2;
+        }
+
+        .theory-preview {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            line-height: 1.5;
+            border-top: 1px solid #002200;
+            padding-top: 15px;
+            margin-bottom: 20px;
+            height: 60px;
+            overflow: hidden;
+            z-index: 2;
+        }
+
+        .status-box {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.7rem;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border-dim);
+            z-index: 2;
+        }
+
+        .tag-active {
+            color: #000;
+            background: var(--neon-green);
+            padding: 2px 8px;
+            font-weight: bold;
+            border-radius: 4px;
+            box-shadow: 0 0 10px var(--soft-green);
+        }
+
+        /* Добавь это в конец блока <style> */
+        .back-link {
+            display: block;
+            width: fit-content;
+            margin: 60px auto;
+            /* Центрирует кнопку и дает отступ сверху */
+            padding: 12px 25px;
+            color: #444;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-size: 0.8rem;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            transition: all 0.4s ease;
+        }
+
+        .back-link:hover {
+            color: var(--neon-green);
+            border-color: var(--neon-green);
+            background: rgba(0, 255, 65, 0.05);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+            transform: translateY(-3px);
+        }
+
+        .technique-tags {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .tag {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            border: 1px solid;
+        }
+
+        .tag-green {
+            color: #00ff41;
+            border-color: #00ff41;
+            background: rgba(0, 255, 65, 0.1);
+        }
+
+        .tag-cyan {
+            color: #00e5ff;
+            border-color: #00e5ff;
+            background: rgba(0, 229, 255, 0.1);
+        }
+
+        .tag-gold {
+            color: #ffd700;
+            border-color: #ffd700;
+            background: rgba(255, 215, 0, 0.1);
+        }
+
+        .tag-red {
+            color: #ff3e3e;
+            border-color: #ff3e3e;
+            background: rgba(255, 62, 62, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>[!] SQL_TARGET_INFRASTRUCTURE</h1>
+    <div class="technique-tags" style="display: flex; gap: 10px; justify-content: center; margin-bottom: 30px;">
+        <span class="tag tag-green"
+            style="color: #00ff41; border: 1px solid #00ff41; padding: 4px 12px; border-radius: 4px; background: rgba(0,255,65,0.1);">Classic
+            SQLi</span>
+        <span class="tag tag-cyan"
+            style="color: #00e5ff; border: 1px solid #00e5ff; padding: 4px 12px; border-radius: 4px; background: rgba(0,229,255,0.1);">Blind
+            SQLi</span>
+        <span class="tag tag-gold"
+            style="color: #ffd700; border: 1px solid #ffd700; padding: 4px 12px; border-radius: 4px; background: rgba(255,215,0,0.1);">Union
+            Based</span>
+        <span class="tag tag-red"
+            style="color: #ff3e3e; border: 1px solid #ff3e3e; padding: 4px 12px; border-radius: 4px; background: rgba(255,62,62,0.1);">Error
+            Based</span>
+    </div>
+
+    {% set done_count = levels | selectattr('completed') | list | length %}
+    <div class="progress-wrap" style="width: 400px; margin: 0 auto 40px auto;">
+        <div class="progress-label" style="font-size: 0.7rem; color: #555; margin-bottom: 5px; text-align: left;">
+            SQL_INJECTION_PROGRESS</div>
+        <div class="progress-bar-track"
+            style="background: #111; height: 10px; border-radius: 5px; border: 1px solid #222;">
+            <div class="progress-bar-fill"
+                style="width: {{ (done_count / levels|length * 100) | int }}%; background: #00ff41; height: 100%; border-radius: 5px; box-shadow: 0 0 10px #00ff41;">
+            </div>
+        </div>
+        <div class="progress-count" style="font-size: 0.8rem; text-align: right; margin-top: 5px; color: #00ff41;">{{
+            done_count }}/{{ levels|length }} NODES</div>
+    </div>
+
+    <div class="levels-grid">
+        {% for level in levels %}
+        <a class="level-card" href="{{ url_for('sql.sql_level', level_id=level.id) }}">
+            <div class="level-id">PATH: root/targets/level_0{{ level.id }}</div>
+            <div class="level-title">> {{ level.title }}</div>
+            <div class="theory-preview">
+                DATA_INTEL: {{ level.theory[:115] }}...
+            </div>
+
+            <div class="status-box">
+                <span>INTEL: ACQUIRED</span>
+                <span class="tag-active">READY_TO_INJECT</span>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+
+    <a href="/dashboard" class="back-link">ABORT_MISSION_AND_RETURN_TO_BASE</a>
+
+</body>
+
+</html>

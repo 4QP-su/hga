@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>TERMINAL: ACCESS_RESTRICTED</title>
+    <style>
+        body {
+            background: #050000;
+            color: #ff3333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Monaco', 'Courier New', monospace;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /* Красная пульсация на фоне */
+        #alert-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(50, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 100%);
+            animation: alert-flash 3s infinite;
+            z-index: 1;
+        }
+
+        #error-box {
+            border: 1px solid #ff3333;
+            padding: 50px;
+            text-align: center;
+            background: rgba(10, 0, 0, 0.95);
+            max-width: 550px;
+            box-shadow: 0 0 60px rgba(255, 0, 0, 0.3);
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Хакерские уголки */
+        .corner {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            border: 2px solid #ff3333;
+        }
+
+        .top-left {
+            top: -2px;
+            left: -2px;
+            border-right: 0;
+            border-bottom: 0;
+        }
+
+        .bottom-right {
+            bottom: -2px;
+            right: -2px;
+            border-left: 0;
+            border-top: 0;
+        }
+
+        #glitch-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px #550000;
+        }
+
+        #status-log {
+            text-align: left;
+            background: #000;
+            padding: 20px;
+            margin: 25px 0;
+            border-left: 3px solid #ff3333;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .log-line {
+            display: none;
+            margin-bottom: 5px;
+        }
+
+        .price-tag {
+            font-size: 1.2rem;
+            color: #fff;
+            background: #330000;
+            padding: 5px 15px;
+            border-radius: 3px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        #action-btns {
+            display: none;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        @keyframes alert-flash {
+            0% {
+                opacity: 0.8;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.8;
+            }
+        }
+
+        .btn-buy {
+            text-decoration: none;
+            border: 1px solid #ff3333;
+            color: #ff3333;
+            padding: 12px 25px;
+            transition: 0.3s;
+            font-weight: bold;
+        }
+
+        .btn-buy:hover {
+            background: #ff3333;
+            color: #000;
+            box-shadow: 0 0 20px #ff3333;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="alert-bg"></div>
+
+    <div id="error-box">
+        <div class="corner top-left"></div>
+        <div class="corner bottom-right"></div>
+
+        <div id="glitch-title">[ ACCESS_DENIED ]</div>
+        <p style="color: #888;">FIREWALL_DETECTED: UNAUTHORIZED_CONNECTION_ATTEMPT</p>
+
+        <div id="status-log">
+            <div class="log-line" id="l1">> Traceback: 127.0.0.1 -> TARGET_NODE_{{ level_id }}</div>
+            <div class="log-line" id="l2">> Status: <span style="color: #ff3333;">ENCRYPTED_GATEWAY</span></div>
+            <div class="log-line" id="l3">> Analyzing account: <span style="color: #0f0;">CASH_${{ balance }}</span>
+            </div>
+            <div class="log-line" id="l4">> Bypass tool: **SQL_INJECTOR_V2**</div>
+            <div class="log-line" id="l5" style="color: #fff; margin-top: 10px;">> READY TO OVERRIDE?</div>
+        </div>
+
+        <div class="price-tag">EXPLOIT COST: ${{ price }}</div>
+
+        <div id="action-btns">
+            <a href="/buy_level/{{ level_id }}" class="btn-buy">
+                BYPASS SECURITY (-${{ price }})
+            </a>
+            <a href="/sql-injection" style="text-decoration: none; color: #444; font-size: 0.8rem; align-self: center;">
+                [ RETURN_TO_BASE ]
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Анимация строк лога
+        const delays = [400, 900, 1400, 1800, 2200];
+        for (let i = 1; i <= 5; i++) {
+            setTimeout(() => {
+                document.getElementById(`l${i}`).style.display = 'block';
+            }, delays[i - 1]);
+        }
+        // Появление кнопок
+        setTimeout(() => {
+            document.getElementById('action-btns').style.display = 'flex';
+        }, 2500);
+    </script>
+</body>
+
+</html>

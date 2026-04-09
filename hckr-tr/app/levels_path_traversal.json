@@ -1,0 +1,89 @@
+{
+    "ru": {
+        "1": {
+            "id": 1,
+            "title": "Простой обход директории",
+            "situation": "Веб-приложение читает файлы из каталога. Используй ../ для выхода из текущей директории.",
+            "visual_text": "FILE SYSTEM: Файлы находятся в /home/www/files/. Попробуй выйти в /etc/",
+            "hint": "Используй ../ (две точки и слэш) для подъёма на уровень выше.\n\nПримеры:\n../file.txt\n../../etc/passwd",
+            "theory": "Path Traversal — уязвимость, позволяющая прочитать файлы вне предполагаемой директории, используя спецсимволы.",
+            "outcome": "Чтение файла /etc/passwd через простой ../../../etc/passwd"
+        },
+        "2": {
+            "id": 2,
+            "title": "Фильтр явного ../",
+            "situation": "Сервер блокирует символы '../' в явном виде, но не проверяет URL-кодирование и другие обходы.",
+            "visual_text": "WAF: Обнаружены попытки path traversal. Фильтр включен.",
+            "hint": "Фильтр ищет '../' в строке. Используй обход:\n• %2F вместо / (URL-encoding)\n• ....// (двойной слэш)\n• Смешивание кодирований\n\nПримеры:\n..%2F..%2F..%2Fetc%2Fshadow\n....//....//....//var/log/access.log",
+            "theory": "Даже если приложение фильтрует '../', оно может не проверять закодированные версии или неправильно обработать несколько обходов.",
+            "outcome": "Обход фильтра через URL-кодирование и двойную кодировку"
+        },
+        "3": {
+            "id": 3,
+            "title": "Продвинутый обход фильтра",
+            "situation": "Более сложный фильтр пытается перехватить несколько типов атак. Используй комбинацию приёмов.",
+            "visual_text": "ADVANCED WAF: Комплексная защита от path traversal.",
+            "hint": "Комбинируй методы:\n• Энкодирование на разных уровнях: %2e%2e\n• Обработка фильтром 'регулярным выражением'\n• Непроверенное содержимое переменных окружения\n\nПримеры:\n%2e%2e/%2e%2e/%2e%2e/.env\nencoded_../../../config.py",
+            "theory": "Защита: белые списки путей, чешская проверка после декодирования, использование realpath()",
+            "outcome": "Обход сложного фильтра комбинированием методов кодирования"
+        }
+    },
+    "en": {
+        "1": {
+            "id": 1,
+            "title": "Simple Directory Bypass",
+            "situation": "Web application reads files from a directory. Use ../ to escape the current directory.",
+            "visual_text": "FILE SYSTEM: Files are in /home/www/files/. Try to escape to /etc/",
+            "hint": "Use ../ (dot-dot-slash) to go up one directory level.\n\nExamples:\n../file.txt\n../../etc/passwd",
+            "theory": "Path Traversal — a vulnerability that allows reading files outside the intended directory using special characters.",
+            "outcome": "Reading /etc/passwd via simple ../../../etc/passwd"
+        },
+        "2": {
+            "id": 2,
+            "title": "Explicit ../ Filter",
+            "situation": "Server blocks '../' explicitly, but doesn't check URL encoding and other bypasses.",
+            "visual_text": "WAF: Path traversal attempts detected. Filter enabled.",
+            "hint": "Filter looks for '../' in the string. Use bypasses:\n• %2F instead of / (URL encoding)\n• ....// (double slash)\n• Encoding mixing\n\nExamples:\n..%2F..%2F..%2Fetc%2Fshadow\n....//....//....//var/log/access.log",
+            "theory": "Even if the application filters '../', it may not check encoded versions or handle multiple traversals correctly.",
+            "outcome": "Bypass filter via URL encoding and double encoding"
+        },
+        "3": {
+            "id": 3,
+            "title": "Advanced Filter Bypass",
+            "situation": "More sophisticated filter attempts to catch multiple attack types. Use combination techniques.",
+            "visual_text": "ADVANCED WAF: Comprehensive path traversal protection.",
+            "hint": "Combine methods:\n• Multi-level encoding: %2e%2e\n• Regex pattern bypasses\n• Unchecked environment variable expansion\n\nExamples:\n%2e%2e/%2e%2e/%2e%2e/.env\nencoded_../../../config.py",
+            "theory": "Defense: whitelist paths, decode-then-check, use realpath(), chroot jails.",
+            "outcome": "Bypass sophisticated filter using combined encoding techniques"
+        }
+    },
+    "kz": {
+        "1": {
+            "id": 1,
+            "title": "Қарапайым директория анықтамасы",
+            "situation": "Веб-қосымша файлдарды каталогтан оқиды. Ағымды каталогтан шығу үшін ../ пайдалан.",
+            "visual_text": "ФАЙЛ ЖҮЙЕСІ: Файлдар /home/www/files/ ішінде. /etc/ бөліміне өтуге тырысу.",
+            "hint": "../ (екі нүкте және слэш) пайдалар бір деңгей жоғары өтуге.\n\nМысалдар:\n../file.txt\n../../etc/passwd",
+            "theory": "Path Traversal — ерекше таңбаларды пайдалана отырып, ынамданған каталогтан тысқары файлдарды оқуға мүмкіндік беретін уязвімдік.",
+            "outcome": "Қарапайым ../../../etc/passwd арқылы /etc/passwd файлын оқу"
+        },
+        "2": {
+            "id": 2,
+            "title": "Ашық ../ сүзгісі",
+            "situation": "Сервер '../' бөлінген түрде блокқа қояды, бірақ URL кодтау және басқа да анықтамаларды проверкасыз қалдырады.",
+            "visual_text": "WAF: Path traversal әрекеттері анықталды. Сүзгі қосылды.",
+            "hint": "Сүзгі '../' ізді іздейді. Және маңындағы анықтама пайдалан:\n• %2F орнына / (URL кодталу)\n• ....// (қос слэш)\n• Құрамдастыруды араластыру\n\nМысалдар:\n..%2F..%2F..%2Fetc%2Fshadow\n....//....//....//var/log/access.log",
+            "theory": "Қосымша '../' сүзгі қоса салғанымен, кодталған нұсқаларын немесе бірнеше саяхатын дәл өңдемеуі мүмкін.",
+            "outcome": "URL кодтау арқылы сүзгіні анықтау"
+        },
+        "3": {
+            "id": 3,
+            "title": "Қарқынды сүзгі анықтамасы",
+            "situation": "Түйгі сүзгі бірнеше шабуыл түрлерін ұстап алуға тырысады. Біліктің комбинациясын пайдалан.",
+            "visual_text": "ҚАРҚЫНДЫ WAF: Жан-жақты path traversal қорғалуы.",
+            "hint": "Әдістерді біріктіріңіз:\n• Көпбөлінді кодтау: %2e%2e\n• Regex мен жүгінді\n• Қараусыз климатты құрамдардың кеңейтімі\n\nМысалдар:\n%2e%2e/%2e%2e/%2e%2e/.env\nencoded_../../../config.py",
+            "theory": "Қорғау: ақ қара істі, кодын ажырату, realpath() пайдалану.",
+            "outcome": "Едісінің кодталу ұтегімен сүзгіні анықтау"
+        }
+    }
+}

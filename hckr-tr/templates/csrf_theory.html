@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="{{ curr_lang }}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>CSRF Theory - Lesson {{ level }}</title>
+    <style>
+        :root {
+            --primary-purple: #cc00ff;
+            --dim-purple: #330055;
+            --deep-bg: #050505;
+            --panel-bg: #080808;
+            --card-bg: #0d0d0d;
+            --cyan-accent: #00e5ff;
+            --warning-gold: #ffd700;
+            --error-red: #ff3e3e;
+        }
+
+        body {
+            background-color: var(--deep-bg);
+            color: var(--primary-purple);
+            font-family: 'Courier New', monospace;
+            padding: 40px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border: 1px solid var(--dim-purple);
+            padding: 40px;
+            border-radius: 12px;
+        }
+
+        h1 {
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .theory-box {
+            background: #0a0a0a;
+            border-left: 4px solid var(--warning-gold);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 6px;
+            line-height: 1.8;
+        }
+
+        .code-block {
+            background: #000;
+            border: 1px solid #333;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 0.85rem;
+            color: #0f0;
+        }
+
+        .quiz-box {
+            background: #101010;
+            border: 1px solid #333;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+
+        .quiz-box h3 {
+            margin-top: 0;
+            color: #fff;
+        }
+
+        .q-block {
+            margin-bottom: 18px;
+        }
+
+        .q-block p {
+            margin: 0 0 8px 0;
+        }
+
+        .q-block label {
+            display: block;
+            margin: 5px 0;
+            font-size: 0.95rem;
+        }
+
+        .error {
+            color: #ff4f4f;
+            margin-bottom: 12px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: var(--primary-purple);
+            color: #000;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-top: 30px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #ff00ff;
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+        }
+
+        .example {
+            background: #1a0a2e;
+            border: 1px solid #330055;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>LEVEL {{ level }}: {{ level_data.title }}</h1>
+        <div style="color: #888; font-size: 0.9rem; margin-bottom: 25px;">{{ t.theory_title }}</div>
+
+        <div class="theory-box">
+            <strong style="color: var(--cyan-accent);">{{ t.csrf_theory_p1 }}</strong>
+        </div>
+
+        <div class="theory-box">
+            <strong style="color: var(--warning-gold);">{{ t.csrf_theory_p2 }}</strong>
+        </div>
+
+        <div class="theory-box">
+            <strong>{{ t.csrf_theory_p3 }}</strong>
+        </div>
+
+        <div class="theory-box">
+            <strong>{{ t.csrf_theory_p4 }}</strong>
+        </div>
+
+        {% if level == 1 %}
+        <div class="theory-box">
+            <strong>{{ t.csrf_lvl1_ex }}</strong>
+        </div>
+        {% elif level == 2 %}
+        <div class="theory-box">
+            <strong>{{ t.csrf_lvl2_ex }}</strong>
+        </div>
+        {% elif level == 3 %}
+        <div class="theory-box">
+            <strong>{{ t.csrf_lvl3_ex }}</strong>
+        </div>
+        {% endif %}
+
+        <div class="theory-box">
+            <strong style="color: #00ff41;">{{ t.csrf_theory_p5 }}</strong>
+            <p>{{ t.csrf_theory_p6 }}</p>
+        </div>
+
+        <div class="quiz-box">
+            <h3>{{ t.csrf_theory_quiz_heading }}</h3>
+            {% if error %}<p class="error">{{ error }}</p>{% endif %}
+            <form method="POST" action="{{ url_for('csrf.verify_csrf_theory') }}">
+                <div class="q-block">
+                    <p>{{ t.csrf_th_q1 }}</p>
+                    <label><input type="radio" name="q1" value="corr" required> {{ t.csrf_th_q1o1 }}</label>
+                    <label><input type="radio" name="q1" value="w1"> {{ t.csrf_th_q1o2 }}</label>
+                    <label><input type="radio" name="q1" value="w2"> {{ t.csrf_th_q1o3 }}</label>
+                </div>
+                <div class="q-block">
+                    <p>{{ t.csrf_th_q2 }}</p>
+                    <label><input type="radio" name="q2" value="w1" required> {{ t.csrf_th_q2o1 }}</label>
+                    <label><input type="radio" name="q2" value="corr"> {{ t.csrf_th_q2o2 }}</label>
+                    <label><input type="radio" name="q2" value="w2"> {{ t.csrf_th_q2o3 }}</label>
+                </div>
+                <div class="q-block">
+                    <p>{{ t.csrf_th_q3 }}</p>
+                    <label><input type="radio" name="q3" value="w1" required> {{ t.csrf_th_q3o1 }}</label>
+                    <label><input type="radio" name="q3" value="corr"> {{ t.csrf_th_q3o2 }}</label>
+                    <label><input type="radio" name="q3" value="w2"> {{ t.csrf_th_q3o3 }}</label>
+                </div>
+                <div class="q-block">
+                    <p>{{ t.csrf_th_q4 }}</p>
+                    <label><input type="radio" name="q4" value="w1" required> {{ t.csrf_th_q4o1 }}</label>
+                    <label><input type="radio" name="q4" value="corr"> {{ t.csrf_th_q4o2 }}</label>
+                    <label><input type="radio" name="q4" value="w2"> {{ t.csrf_th_q4o3 }}</label>
+                </div>
+                <div class="q-block">
+                    <p>{{ t.csrf_th_q5 }}</p>
+                    <label><input type="radio" name="q5" value="corr" required> {{ t.csrf_th_q5o1 }}</label>
+                    <label><input type="radio" name="q5" value="w1"> {{ t.csrf_th_q5o2 }}</label>
+                    <label><input type="radio" name="q5" value="w2"> {{ t.csrf_th_q5o3 }}</label>
+                </div>
+                <div class="q-block">
+                    <p>{{ t.csrf_th_q6 }}</p>
+                    <label><input type="radio" name="q6" value="w1" required> {{ t.csrf_th_q6o1 }}</label>
+                    <label><input type="radio" name="q6" value="corr"> {{ t.csrf_th_q6o2 }}</label>
+                    <label><input type="radio" name="q6" value="w2"> {{ t.csrf_th_q6o3 }}</label>
+                </div>
+                <button type="submit" class="btn-hack">{{ t.csrf_theory_submit }}</button>
+            </form>
+        </div>
+
+        <a href="{{ url_for('csrf.csrf_level', level_id=level) }}" class="back-btn">← BACK TO CHALLENGE</a>
+    </div>
+
+</body>
+
+</html>

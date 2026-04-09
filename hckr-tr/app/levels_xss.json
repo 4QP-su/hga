@@ -1,0 +1,143 @@
+    {
+        "ru": {
+            "1": {
+                "title": "Script Injection",
+                "situation": "Поле ввода никак не фильтруется. Выполни alert.",
+                "visual_text": "SYSTEM: Input field detected. No sanitization.",
+                "desc": "LVL 1: Выполните простой XSS через тег script.",
+                "hint": "Просто введи: <script>alert(1)</script>\n\nТег <script> выполняется браузером напрямую. Это базовая форма Reflected XSS.",
+                "theory": "Reflected XSS: скрипт из запроса отражается на странице и исполняется.",
+                "outcome": "Выполнение произвольного JS-кода в браузере жертвы."
+            },
+            "2": {
+                "title": "Case Filter Bypass",
+                "situation": "WAF заблокировал точный тег script. Найди способ обойти фильтр.",
+                "visual_text": "WARNING: Basic WAF active. Lowercase script blocked.",
+                "desc": "LVL 2: Фильтр блокирует тег script в нижнем регистре. Обойди его.",
+                "hint": "Система блокирует только прямое вхождение '<script>'. Попробуй обмануть фильтр, добавив пробелы внутри тега, например: '< script >'. Регулярное выражение проверки их проигнорирует, а фильтр блокировки — не заметит.",
+                "theory": "Фильтры на основе строк уязвимы к манипуляции регистром символов.",
+                "outcome": "Обход WAF через изменение регистра тега."
+            },
+            "3": {
+                "title": "Event Handler XSS",
+                "situation": "Все теги script удалены. Нужен другой вектор атаки.",
+                "visual_text": "SCAN: All script tags stripped. Event handlers still active.",
+                "desc": "LVL 3: Теги script полностью заблокированы. Используй обработчики событий.",
+                "hint": "Используй HTML-атрибуты с обработчиками событий:\n<img src=x onerror=alert(1)>\n<svg onload=alert(1)>\n\nСобытия onerror, onload, onmouseover выполняются без тега script.",
+                "theory": "HTML-события (onerror, onload) могут выполнять JS без тега script.",
+                "outcome": "XSS через атрибуты событий в HTML-тегах."
+            },
+            "4": {
+                "title": "Encoded Payload",
+                "situation": "Фильтр ищет строку 'alert'. Нужно закодировать вызов функции.",
+                "visual_text": "FILTER: keyword 'alert' blacklisted. Encoding required.",
+                "desc": "LVL 4: Слово 'alert' заблокировано. Закодируй payload.",
+                "hint": "Используй альтернативные способы вызова функции:\n\\u0061lert(1) — unicode escape\nString.fromCharCode(97,108,101,114,116) — charcode\neval('ale'+'rt(1)') — конкатенация\nconfirm(1) или prompt(1) — альтернативы alert\n\nФильтры на слово не защищают от кодирования.",
+                "theory": "Кодирование payload'а обходит фильтры по ключевым словам.",
+                "outcome": "Обход keyword-фильтра через unicode/charcode/eval."
+            },
+            "5": {
+                "title": "DOM-based XSS",
+                "situation": "Приложение вставляет твой ввод в href атрибут ссылки.",
+                "visual_text": "DOM: User input reflected in href attribute.",
+                "desc": "LVL 5: Выполни XSS через протокол javascript: или data: URI.",
+                "hint": "Когда ввод попадает в href, используй:\njavascript:alert(1)\n\nИли через data URI:\ndata:text/html,<script>alert(1)</script>\n\nПротокол javascript: исполняется при клике на ссылку.",
+                "theory": "DOM-based XSS: вредоносный код внедряется в DOM через свойства элементов.",
+                "outcome": "Выполнение кода через javascript: URI в href атрибуте."
+            }
+        },
+        "kz": {
+            "1": {
+                "title": "Script Injection",
+                "situation": "Енгізу өрісі ешқандай сүзгіленбейді. Alert орындаңыз.",
+                "visual_text": "ЖҮЙЕ: Енгізу өрісі табылды. Санитаризация жоқ.",
+                "desc": "LVL 1: script тегі арқылы қарапайым XSS орындаңыз.",
+                "hint": "<script>alert(1)</script> деп енгізіңіз.",
+                "theory": "Reflected XSS: сұраныстан алынған скрипт бетте орындалады.",
+                "outcome": "Браузерде ерікті JS кодын орындау."
+            },
+            "2": {
+                "title": "Регистр сүзгісін айналып өту",
+                "situation": "WAF нақты script тегін блоктады. Сүзгіні айналып өту жолын табыңыз.",
+                "visual_text": "ЕСКЕРТУ: Базалық WAF белсенді.",
+                "desc": "LVL 2: Сүзгі кіші регистрдегі script тегін блоктайды.",
+                "hint": "Жүйе тек тікелей '<script>' тіркесін бұғаттайды. Тег ішіне бос орындар қосу арқылы сүзгіні алдап көр, мысалы: '< script >'. Тексерудің тұрақты өрнегі (regex) оларды елемейді, ал бұғаттау сүзгісі байқамай қалады.",
+                "theory": "Жол негізіндегі сүзгілер регистр манипуляциясына осал.",
+                "outcome": "Тег регистрін өзгерту арқылы WAF айналып өту."
+            },
+            "3": {
+                "title": "Оқиға өңдегіштері",
+                "situation": "Барлық script тегтері жойылды.",
+                "visual_text": "СКАНЕРЛЕУ: script тегтері алынып тасталды.",
+                "desc": "LVL 3: script тегтері толығымен бұғатталған. Оқиға өңдегіштерін қолданыңыз.",
+                "hint": "<img src=x onerror=alert(1)> немесе <svg onload=alert(1)>",
+                "theory": "HTML оқиғалары script тегісіз JS орындай алады.",
+                "outcome": "HTML тег атрибуттары арқылы XSS."
+            },
+            "4": {
+                "title": "Кодталған Payload",
+                "situation": "Сүзгі 'alert' жолын іздейді.",
+                "visual_text": "СҮЗГІ: 'alert' кілт сөзі қара тізімде.",
+                "desc": "LVL 4: 'alert' сөзі бұғатталған. Payload-ды кодтаңыз.",
+                "hint": "\\u0061lert(1) немесе confirm(1) немесе eval('ale'+'rt(1)')",
+                "theory": "Кодтау кілт сөз сүзгілерін айналып өтеді.",
+                "outcome": "Unicode/charcode/eval арқылы кілт сөз сүзгісін айналып өту."
+            },
+            "5": {
+                "title": "DOM-негізделген XSS",
+                "situation": "Қолданба сіздің енгізуіңізді href атрибутына енгізеді.",
+                "visual_text": "DOM: Пайдаланушы енгізуі href атрибутында көрінеді.",
+                "desc": "LVL 5: javascript: немесе data: URI арқылы XSS орындаңыз.",
+                "hint": "javascript:alert(1) немесе data:text/html,<script>alert(1)</script>",
+                "theory": "DOM-негізделген XSS: зиянды код DOM қасиеттері арқылы енгізіледі.",
+                "outcome": "href атрибутындағы javascript: URI арқылы код орындау."
+            }
+        },
+        "en": {
+            "1": {
+                "title": "Script Injection",
+                "situation": "The input field has no sanitization. Execute an alert.",
+                "visual_text": "SYSTEM: Input field detected. No sanitization.",
+                "desc": "LVL 1: Execute a basic XSS via script tag.",
+                "hint": "Simply enter: <script>alert(1)</script>\n\nThe script tag is executed directly by the browser. This is basic Reflected XSS.",
+                "theory": "Reflected XSS: a script from the request is reflected on the page and executed.",
+                "outcome": "Execute arbitrary JS code in the victim's browser."
+            },
+            "2": {
+                "title": "Case Filter Bypass",
+                "situation": "WAF blocked the exact script tag. Find a way around.",
+                "visual_text": "WARNING: Basic WAF active. Lowercase script blocked.",
+                "desc": "LVL 2: The filter blocks lowercase script tag. Bypass it.",
+                "hint": "The system only blocks the exact '<script>' string. Try to bypass the filter by adding spaces inside the tag, like '< script >'. The regex validation will ignore the spaces, but the blacklist filter won't catch it.",
+                "theory": "String-based filters are vulnerable to case manipulation.",
+                "outcome": "Bypass WAF by changing tag character case."
+            },
+            "3": {
+                "title": "Event Handler XSS",
+                "situation": "All script tags are stripped. Need another attack vector.",
+                "visual_text": "SCAN: All script tags stripped. Event handlers still active.",
+                "desc": "LVL 3: All script tags are blocked. Use event handlers.",
+                "hint": "Use HTML attributes with event handlers:\n<img src=x onerror=alert(1)>\n<svg onload=alert(1)>\n\nEvents like onerror, onload, onmouseover run without script tags.",
+                "theory": "HTML events (onerror, onload) can execute JS without a script tag.",
+                "outcome": "XSS via event attributes in HTML tags."
+            },
+            "4": {
+                "title": "Encoded Payload",
+                "situation": "Filter looks for the string 'alert'. Encode the function call.",
+                "visual_text": "FILTER: keyword 'alert' blacklisted. Encoding required.",
+                "desc": "LVL 4: The word 'alert' is blocked. Encode your payload.",
+                "hint": "Use alternative ways to call the function:\n\\u0061lert(1) — unicode escape\nString.fromCharCode(97,108,101,114,116) — charcode\neval('ale'+'rt(1)') — concatenation\nconfirm(1) or prompt(1) — alert alternatives",
+                "theory": "Payload encoding bypasses keyword-based filters.",
+                "outcome": "Bypass keyword filter via unicode/charcode/eval."
+            },
+            "5": {
+                "title": "DOM-based XSS",
+                "situation": "The app inserts your input into an href attribute.",
+                "visual_text": "DOM: User input reflected in href attribute.",
+                "desc": "LVL 5: Execute XSS via javascript: protocol or data: URI.",
+                "hint": "When input goes into href, use:\njavascript:alert(1)\n\nOr via data URI:\ndata:text/html,<script>alert(1)</script>",
+                "theory": "DOM-based XSS: malicious code is injected into the DOM via element properties.",
+                "outcome": "Code execution via javascript: URI in href attribute."
+            }
+        }
+    }

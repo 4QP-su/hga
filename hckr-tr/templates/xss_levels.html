@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="{{ curr_lang }}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>XSS Lab | Mission Selection</title>
+    <style>
+        :root {
+            --neon-green: #00ff41;
+            --soft-green: rgba(0, 255, 65, 0.12);
+            --bg-black: #050505;
+            --card-bg: #0a0a0a;
+            --border-dim: #004411;
+            --text-dim: #008f23;
+            --gold: #ffd700;
+            --error-red: #ff3e3e;
+            --cyan: #00e5ff;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-black);
+            color: var(--neon-green);
+            font-family: 'Courier New', monospace;
+            padding: 40px;
+            margin: 0;
+            animation: fadeInPage 0.8s ease-out;
+        }
+
+        @keyframes fadeInPage {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        body::before {
+            content: " ";
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.08) 50%),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+            background-size: 100% 2px, 2px 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        /* TOPBAR */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-dim);
+        }
+
+        .topbar-left {
+            font-size: 0.75rem;
+            color: #444;
+            letter-spacing: 2px;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 0.8rem;
+        }
+
+        .stat-pill {
+            padding: 4px 12px;
+            border: 1px solid var(--border-dim);
+            border-radius: 6px;
+            color: var(--gold);
+        }
+
+        .stat-pill span {
+            color: #444;
+            margin-right: 4px;
+        }
+
+        .back-btn {
+            color: #444;
+            text-decoration: none;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            padding: 5px 12px;
+            border: 1px solid #222;
+            border-radius: 6px;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover {
+            color: var(--neon-green);
+            border-color: var(--border-dim);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.6rem;
+            text-transform: uppercase;
+            letter-spacing: 6px;
+            margin-bottom: 12px;
+            color: #fff;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #444;
+            letter-spacing: 3px;
+            margin-bottom: 50px;
+        }
+
+        /* TECHNIQUE LABELS */
+        .technique-tags {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+
+        .tag {
+            font-size: 0.65rem;
+            padding: 4px 10px;
+            border-radius: 4px;
+            letter-spacing: 1px;
+            border: 1px solid;
+        }
+
+        .tag-green {
+            color: var(--neon-green);
+            border-color: var(--border-dim);
+            background: rgba(0, 255, 65, 0.05);
+        }
+
+        .tag-cyan {
+            color: var(--cyan);
+            border-color: rgba(0, 229, 255, 0.3);
+            background: rgba(0, 229, 255, 0.05);
+        }
+
+        .tag-gold {
+            color: var(--gold);
+            border-color: rgba(255, 215, 0, 0.3);
+            background: rgba(255, 215, 0, 0.05);
+        }
+
+        .tag-red {
+            color: var(--error-red);
+            border-color: rgba(255, 62, 62, 0.3);
+            background: rgba(255, 62, 62, 0.05);
+        }
+
+        /* GRID */
+        .levels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .level-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-dim);
+            padding: 28px;
+            text-decoration: none;
+            color: var(--neon-green);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            transition: transform 0.35s cubic-bezier(0.165, 0.84, 0.44, 1),
+                box-shadow 0.35s ease,
+                border-color 0.35s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .level-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, transparent 0%, var(--soft-green) 100%);
+            opacity: 0;
+            transition: opacity 0.35s;
+        }
+
+        .level-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--neon-green);
+            box-shadow: 0 10px 30px rgba(0, 255, 65, 0.1);
+        }
+
+        .level-card:hover::after {
+            opacity: 1;
+        }
+
+        /* Заблокированная карточка */
+        .level-card.locked {
+            opacity: 0.4;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        /* Пройденная карточка */
+        .level-card.completed {
+            border-color: rgba(0, 255, 65, 0.4);
+        }
+
+        .level-card.completed::before {
+            content: '✓ COMPLETED';
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            font-size: 0.6rem;
+            color: var(--neon-green);
+            background: rgba(0, 255, 65, 0.1);
+            border: 1px solid var(--neon-green);
+            border-radius: 4px;
+            padding: 2px 8px;
+            letter-spacing: 1px;
+            z-index: 2;
+        }
+
+        .card-path {
+            font-size: 0.7rem;
+            color: #444;
+            letter-spacing: 1px;
+            z-index: 1;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #fff;
+            letter-spacing: 2px;
+            z-index: 1;
+        }
+
+        .card-theory {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            line-height: 1.5;
+            border-top: 1px solid #0d0d0d;
+            padding-top: 10px;
+            height: 52px;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .card-outcome {
+            font-size: 0.75rem;
+            color: #333;
+            font-style: italic;
+            z-index: 1;
+        }
+
+        .card-footer {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.65rem;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 7px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border-dim);
+            z-index: 2;
+        }
+
+        .tag-active {
+            color: #000;
+            background: var(--neon-green);
+            padding: 2px 8px;
+            font-weight: bold;
+            border-radius: 4px;
+            font-size: 0.6rem;
+        }
+
+        .tag-locked-sm {
+            color: #333;
+            border: 1px solid #222;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.6rem;
+        }
+
+        /* PROGRESS BAR */
+        .progress-wrap {
+            max-width: 1100px;
+            margin: 0 auto 40px;
+            background: #0a0a0a;
+            border: 1px solid var(--border-dim);
+            border-radius: 10px;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .progress-label {
+            font-size: 0.75rem;
+            color: #444;
+            white-space: nowrap;
+        }
+
+        .progress-bar-track {
+            flex: 1;
+            height: 4px;
+            background: #111;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--neon-green);
+            box-shadow: 0 0 6px var(--neon-green);
+            border-radius: 2px;
+        }
+
+        .progress-count {
+            font-size: 0.8rem;
+            color: var(--neon-green);
+            white-space: nowrap;
+        }
+
+        .back-link {
+            display: block;
+            width: fit-content;
+            margin: 50px auto 0;
+            padding: 12px 25px;
+            color: #444;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-size: 0.8rem;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            transition: all 0.4s ease;
+        }
+
+        .back-link:hover {
+            color: var(--neon-green);
+            border-color: var(--neon-green);
+            background: rgba(0, 255, 65, 0.05);
+            transform: translateY(-3px);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="topbar">
+        <div class="topbar-left">// XSS_EXPLOITATION_LAB</div>
+        <div class="topbar-right">
+            <a href="{{ url_for('xss.xss_theory') }}" class="back-btn"
+                style="border-color: var(--gold); color: var(--gold);">{{ t.xss_theory_nav }}</a>
+            <div class="stat-pill"><span>BALANCE:</span>${{ current_user.balance }}</div>
+            <div class="stat-pill" style="color: var(--neon-green);"><span>XP:</span>{{ current_user.xp }}</div>
+            <a href="{{ url_for('main.index') }}" class="back-btn">[&lt;&lt; DASHBOARD]</a>
+        </div>
+    </div>
+
+    <h1>[⚡] XSS_TARGET_NODES</h1>
+    <div class="subtitle">PATH: root/xss/ // 5 ATTACK VECTORS // CROSS-SITE SCRIPTING</div>
+
+    <div class="technique-tags">
+        <span class="tag tag-green">Reflected XSS</span>
+        <span class="tag tag-cyan">Filter Bypass</span>
+        <span class="tag tag-gold">Event Handlers</span>
+        <span class="tag tag-red">Encoded Payload</span>
+        <span class="tag tag-cyan">DOM-based XSS</span>
+    </div>
+
+    {% set done_count = levels | selectattr('completed') | list | length %}
+    <div class="progress-wrap">
+        <div class="progress-label">MISSION_PROGRESS</div>
+        <div class="progress-bar-track">
+            <div class="progress-bar-fill" style="width: {{ (done_count / 5 * 100) | int }}%"></div>
+        </div>
+        <div class="progress-count">{{ done_count }}/5 NODES</div>
+    </div>
+
+    <div class="levels-grid">
+        {% for level in levels %}
+        <a class="level-card {% if level.completed %}completed{% elif not level.unlocked %}locked{% endif %}"
+            href="{{ url_for('xss.xss_level', level_id=level.id) }}">
+
+            <div class="card-path">PATH: root/xss/node_0{{ level.id }}</div>
+            <div class="card-title">[0{{ level.id }}] {{ level.title | upper }}</div>
+            <div class="card-theory">{{ level.theory }}</div>
+            <div class="card-outcome">> {{ level.outcome }}</div>
+
+            <div class="card-footer">
+                <span style="color: #333">VECTOR: XSS_LVL_0{{ level.id }}</span>
+                {% if level.completed %}
+                <span class="tag-active">PWNED</span>
+                {% elif level.unlocked %}
+                <span class="tag-active">READY</span>
+                {% else %}
+                <span class="tag-locked-sm">LOCKED</span>
+                {% endif %}
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+
+    <a href="/dashboard" class="back-link">ABORT_AND_RETURN_TO_BASE</a>
+
+</body>
+
+</html>

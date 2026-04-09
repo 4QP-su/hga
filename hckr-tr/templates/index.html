@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HACKER_OS | CORE_DASHBOARD</title>
+    <style>
+        :root {
+            --primary-green: #00ff41;
+            --neon-glow: rgba(0, 255, 65, 0.4);
+            --deep-bg: #030303;
+            --panel-bg: #080808;
+            --module-bg: rgba(13, 13, 13, 0.9);
+            --cyan-accent: #00e5ff;
+            --gold: #ffd700;
+        }
+
+        body {
+            background-color: var(--deep-bg);
+            color: var(--primary-green);
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Анимированный фон (сетка) */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                linear-gradient(rgba(0, 255, 65, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 65, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* --- САЙДБАР (Стильный и широкий) --- */
+        .sidebar {
+            width: 280px;
+            background: var(--panel-bg);
+            border-right: 1px solid rgba(0, 255, 65, 0.2);
+            padding: 40px 25px;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+            box-shadow: 10px 0 30px rgba(0, 0, 0, 0.8);
+        }
+
+        .agent-info {
+            border: 1px solid var(--primary-green);
+            padding: 15px;
+            background: rgba(0, 255, 65, 0.02);
+            box-shadow: inset 0 0 10px var(--neon-glow);
+            margin-bottom: 30px;
+        }
+
+        .nav-link {
+            color: var(--primary-green);
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            border-left: 2px solid transparent;
+            transition: 0.3s;
+        }
+
+        .nav-link:hover {
+            background: rgba(0, 255, 65, 0.05);
+            border-left: 2px solid var(--primary-green);
+            padding-left: 20px;
+            text-shadow: 0 0 8px var(--primary-green);
+        }
+
+        /* --- ОСНОВНАЯ ЗОНА --- */
+        .main-view {
+            flex: 1;
+            padding: 40px 60px;
+            z-index: 5;
+            overflow-y: auto;
+            background: radial-gradient(circle at center, rgba(0, 40, 10, 0.1) 0%, transparent 70%);
+        }
+
+        /* TOPBAR (Как приборная панель) */
+        .top-console {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 50px;
+            border-bottom: 1px solid rgba(0, 255, 65, 0.2);
+            padding-bottom: 20px;
+        }
+
+        .glitch-title {
+            font-size: 2rem;
+            font-weight: bold;
+            letter-spacing: 5px;
+            margin: 0;
+            color: #fff;
+            text-shadow: 2px 2px var(--primary-green), -2px -2px var(--cyan-accent);
+        }
+
+        .stat-badge {
+            background: #000;
+            border: 1px solid var(--primary-green);
+            padding: 8px 20px;
+            display: inline-block;
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.1);
+        }
+
+        /* МОДУЛИ (Карточки с "жизнью") */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 30px;
+        }
+
+        .module-frame {
+            background: var(--module-bg);
+            border: 1px solid rgba(0, 255, 65, 0.15);
+            padding: 35px;
+            position: relative;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: hidden;
+        }
+
+        .module-frame:hover {
+            transform: scale(1.02);
+            border-color: var(--primary-green);
+            box-shadow: 0 0 40px rgba(0, 255, 65, 0.15);
+        }
+
+        /* Декоративные уголки */
+        .module-frame::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 15px;
+            height: 15px;
+            border-top: 2px solid var(--primary-green);
+            border-left: 2px solid var(--primary-green);
+        }
+
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .module-id {
+            color: #444;
+            font-size: 0.7rem;
+        }
+
+        .module-title {
+            color: #fff;
+            font-size: 1.5rem;
+            margin: 0;
+            letter-spacing: 2px;
+        }
+
+        .module-content {
+            color: #888;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            min-height: 60px;
+        }
+
+        .action-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: transparent;
+            border: 1px solid var(--primary-green);
+            color: var(--primary-green);
+            text-align: center;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: 0.3s;
+            position: relative;
+            z-index: 2;
+        }
+
+        .action-btn:hover {
+            background: var(--primary-green);
+            color: #000;
+            box-shadow: 0 0 20px var(--primary-green);
+        }
+
+        /* Нижниый статус-бар */
+        .system-footer {
+            margin-top: 50px;
+            font-size: 0.7rem;
+            color: #333;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+
+<body>
+
+    <aside class="sidebar">
+        <div class="agent-info">
+            <div style="font-size: 0.6rem; color: #555; margin-bottom: 5px;">LOGGED_IN_AS:</div>
+            <div style="color: #fff; font-weight: bold; letter-spacing: 1px;">{{ current_user.username | upper }}</div>
+            <div style="font-size: 0.6rem; color: var(--cyan-accent); margin-top: 5px;">SECURE_CONNECTION_STABLE</div>
+        </div>
+
+        <nav>
+            <a href="/dashboard" class="nav-link">>> {{ t.dashboard }}</a>
+            <a href="/sql-injection" class="nav-link">>> SQL_INJECTION</a>
+            <a href="/XSS" class="nav-link">>> XSS_ATTACKS</a>
+            <a href="/CSRF" class="nav-link">>> CSRF_ATTACKS</a>
+            <a href="/PATH" class="nav-link">>> PATH_TRAVERSAL</a>
+            <a href="/AUTH" class="nav-link">>> AUTH_BYPASS</a>
+            <a href="/profile" class="nav-link">>> {{ t.profile }}</a>
+            <a href="/achievements" class="nav-link">>> {{ t.exit }}</a>
+
+            <div style="margin: 40px 0 10px; font-size: 0.6rem; color: #444; border-bottom: 1px solid #222;">
+                SYSTEM_LOCALE</div>
+            <div style="display: flex; gap: 5px;">
+                <a href="/set_lang/kz" class="action-btn {% if curr_lang == 'kz' %}active-lang{% endif %}"
+                    style="padding: 5px; font-size: 0.7rem;">KZ</a>
+                <a href="/set_lang/ru" class="action-btn {% if curr_lang == 'ru' %}active-lang{% endif %}"
+                    style="padding: 5px; font-size: 0.7rem;">RU</a>
+                <a href="/set_lang/en" class="action-btn {% if curr_lang == 'en' %}active-lang{% endif %}"
+                    style="padding: 5px; font-size: 0.7rem;">EN</a>
+            </div>
+
+            <a href="/logout" class="nav-link"
+                style="margin-top: 60px; color: #ff3e3e; border: 1px solid #311; padding: 10px; text-align: center; display: block;">TERMINATE_SESSION</a>
+        </nav>
+    </aside>
+
+    <main class="main-view">
+        <header class="top-console">
+            <div>
+                <h1 class="glitch-title">HACKER_OS v.3</h1>
+                <div style="font-size: 0.7rem; color: #555; margin-top: 5px;">LOCATION: <span
+                        style="color: var(--primary-green);">HOME_SECTOR_7</span></div>
+            </div>
+            <div style="text-align: right; display: flex; gap: 20px;">
+                <div class="stat-badge">
+                    <span style="font-size: 0.6rem; color: #555;">BALANCE:</span><br>
+                    <span style="color: var(--gold); font-size: 1.2rem; font-weight: bold;">${{ current_user.balance
+                        }}</span>
+                </div>
+                <div class="stat-badge">
+                    <span style="font-size: 0.6rem; color: #555;">RANK_XP:</span><br>
+                    <span style="color: var(--cyan-accent); font-size: 1.2rem; font-weight: bold;">{{ current_user.xp
+                        }}</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="grid-container">
+            <section class="module-frame">
+                <div class="module-header">
+                    <h3 class="module-title">{{ t.sql_title }}</h3>
+                    <span class="module-id">ID: 0x01_DB</span>
+                </div>
+                <p class="module-content">{{ t.sql_desc }}</p>
+                <a href="/sql-injection" class="action-btn">INITIALIZE_INJECTION</a>
+            </section>
+
+            <section class="module-frame">
+                <div class="module-header">
+                    <h3 class="module-title">{{ t.xss_title }}</h3>
+                    <span class="module-id">ID: 0x02_WEB</span>
+                </div>
+                <p class="module-content">{{ t.xss_desc }}</p>
+                <a href="/XSS" class="action-btn">INITIALIZE_XSS_SCRIPTS</a>
+            </section>
+
+            <section class="module-frame">
+                <div class="module-header">
+                    <h3 class="module-title">CSRF_ATTACKS</h3>
+                    <span class="module-id">ID: 0x03_FORGE</span>
+                </div>
+                <p class="module-content">Межсайтовая подделка запросов. Выполняй действия от имени других пользователей
+                    без их ведома.</p>
+                <a href="/CSRF" class="action-btn">INITIALIZE_CSRF</a>
+            </section>
+
+            <section class="module-frame">
+                <div class="module-header">
+                    <h3 class="module-title">PATH_TRAVERSAL</h3>
+                    <span class="module-id">ID: 0x04_FILES</span>
+                </div>
+                <p class="module-content">Обход директорий файловой системы. Читай защищённые файлы через уязвимую
+                    навигацию.</p>
+                <a href="/PATH" class="action-btn">INITIALIZE_TRAVERSAL</a>
+            </section>
+
+            <section class="module-frame">
+                <div class="module-header">
+                    <h3 class="module-title">AUTH_BYPASS</h3>
+                    <span class="module-id">ID: 0x05_LOGIN</span>
+                </div>
+                <p class="module-content">Обход аутентификации. Brute force, JWT манипуляция, предсказание токенов
+                    сброса пароля.</p>
+                <a href="/AUTH" class="action-btn">INITIALIZE_AUTH</a>
+            </section>
+        </div>
+
+        <div class="system-footer">
+            <span>Uptime: 1024:12:08</span>
+            <span>Security Level: <span style="color: var(--gold);">ELEVATED</span></span>
+            <span>Kernel: v.4.0.1-HACK</span>
+        </div>
+    </main>
+
+    <div id="admin-terminal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.96); z-index: 10000; align-items: center; justify-content: center;">
+        <div
+            style="width: 450px; border: 2px solid var(--primary-green); padding: 40px; background: #000; box-shadow: 0 0 50px rgba(0, 255, 65, 0.2);">
+            <div style="color: var(--primary-green); margin-bottom: 20px; font-size: 0.8rem;">[ SYSTEM_CRITICAL_ACCESS ]
+            </div>
+            <input type="password" id="admin-input" placeholder="PASSKEY_" autofocus
+                style="width: 100%; background: transparent; border: none; border-bottom: 2px solid var(--primary-green); color: #fff; font-family: monospace; font-size: 1.5rem; outline: none;">
+        </div>
+    </div>
+
+    <script>
+        // Логика Shift+7 (Тот самый root)
+        document.addEventListener('keydown', function (e) {
+            if (e.shiftKey && e.code === 'Digit7') {
+                e.preventDefault();
+                document.getElementById('admin-terminal').style.display = 'flex';
+                document.getElementById('admin-input').focus();
+            }
+            if (e.key === 'Escape') {
+                document.getElementById('admin-terminal').style.display = 'none';
+            }
+        });
+
+        document.getElementById('admin-input').addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                if (this.value === 'unlock_root') {
+                    window.location.href = '/internal/system/console/v2';
+                } else {
+                    this.value = '';
+                    document.getElementById('admin-terminal').style.display = 'none';
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

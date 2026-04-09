@@ -1,0 +1,89 @@
+{
+    "ru": {
+        "1": {
+            "id": 1,
+            "title": "Перебор пароля",
+            "situation": "Администратор использует слабый пароль. Необходимо подобрать правильный из списка часто используемых.",
+            "visual_text": "AUTH SYSTEM: Попытка подбора пароля admin пользователя...",
+            "hint": "Слабые пароли часто из списка распространённых паролей:\npassword, 123456, admin, letmein, welcome\n\nПодсказка: пароль содержит 'Admin' и число '2026'",
+            "theory": "Brute Force атака — перебор всех возможных комбинаций. Защита: rate limiting, сложный пароль, 2FA, captcha.",
+            "outcome": "Успешный подбор пароля из словаря"
+        },
+        "2": {
+            "id": 2,
+            "title": "JWT Token Manipulation",
+            "situation": "Приложение использует JWT токены, но не проверяет подпись. Создай токен с правами admin.",
+            "visual_text": "JWT SYSTEM: Токены без проверки подписи. Создание поддельного администратора...",
+            "hint": "JWT состоит из 3 частей через точку: header.payload.signature\n\nВторая часть (payload) в Base64:\n{\"user\": \"test\", \"role\": \"user\"}\n\nИзмени \"role\": \"admin\" и закодируй обратно в Base64.\n\nПолный обновлённый token: header.modified_payload.signature",
+            "theory": "JWT должна быть проверена на подпись. Если подпись не проверяется, злоумышленник может подделать любой токен.",
+            "outcome": "Создание поддельного JWT токена с правами администратора"
+        },
+        "3": {
+            "id": 3,
+            "title": "Password Reset Token Prediction",
+            "situation": "Токен для сброса пароля может быть угадан, если создаётся небезопасно (низкая энтропия, предсказуемые значения).",
+            "visual_text": "RESET SYSTEM: Предсказание токена сброса пароля...",
+            "hint": "Токен часто содержит предсказуемые части:\n• Имя пользователя (admin, root)\n• Дату (2026)\n• Строки основных слов (reset, token, admin)\n\nСпособ: закодируй в Base64:\nadmin_reset_token_secret_2026",
+            "theory": "Защита: использовать криптографически безопасный random, CSRF токены, привязка IP, время жизни токена.",
+            "outcome": "Угадывание токена сброса пароля и получение доступа admin"
+        }
+    },
+    "en": {
+        "1": {
+            "id": 1,
+            "title": "Password Brute Force",
+            "situation": "Administrator uses a weak password. Guess the correct one from a list of commonly used passwords.",
+            "visual_text": "AUTH SYSTEM: Attempting password brute force for admin user...",
+            "hint": "Weak passwords are often from common password lists:\npassword, 123456, admin, letmein, welcome\n\nHint: password contains 'Admin' and '2026'",
+            "theory": "Brute Force attack — trying all possible combinations. Defense: rate limiting, strong password, 2FA, captcha.",
+            "outcome": "Successfully cracked weak password from dictionary"
+        },
+        "2": {
+            "id": 2,
+            "title": "JWT Token Manipulation",
+            "situation": "Application uses JWT tokens but doesn't verify signature. Create a token with admin rights.",
+            "visual_text": "JWT SYSTEM: Tokens without signature verification. Creating fake administrator...",
+            "hint": "JWT consists of 3 parts separated by dots: header.payload.signature\n\nSecond part (payload) is Base64 encoded:\n{\"user\": \"test\", \"role\": \"user\"}\n\nChange \"role\": \"admin\" and encode back to Base64.\n\nFull updated token: header.modified_payload.signature",
+            "theory": "JWT signature must be verified. If not verified, attacker can forge any token.",
+            "outcome": "Create forged JWT token with administrator privileges"
+        },
+        "3": {
+            "id": 3,
+            "title": "Password Reset Token Prediction",
+            "situation": "Password reset token can be guessed if generated insecurely (low entropy, predictable values).",
+            "visual_text": "RESET SYSTEM: Predicting password reset token...",
+            "hint": "Token often contains predictable parts:\n• Username (admin, root)\n• Date (2026)\n• Common words (reset, token, admin)\n\nMethod: encode to Base64:\nadmin_reset_token_secret_2026",
+            "theory": "Defense: use cryptographically secure random, CSRF tokens, IP binding, token expiration.",
+            "outcome": "Guess password reset token and gain admin access"
+        }
+    },
+    "kz": {
+        "1": {
+            "id": 1,
+            "title": "Пароль Brute Force",
+            "situation": "Администратор сыбайлас пароль пайдаланады. Тұрақты белсенді паролдар тізімінен дәл болуын табу.",
+            "visual_text": "AUTH ЖҮЙЕСІ: Admin пайдаланушысы үшін пароль brute force түтіну...",
+            "hint": "Сыбайлас паролдар жиі арттарғаны паролды іздеуге:\npassword, 123456, admin, letmein, welcome\n\nІспеулер: пароль 'Admin' және '2026' қамтиды",
+            "theory": "Brute Force шабуылы — барлық мүмкін ұйымдастырумен спекуляция. Қорғау: бұлғау сызбасын шектеу, күшті пароль, 2FA.",
+            "outcome": "Сөздік пароль сәтті құрылды"
+        },
+        "2": {
+            "id": 2,
+            "title": "JWT Token өзгерткісі",
+            "situation": "Қосымша JWT толықтырулар пайдалайды, бірақ қолтаңба тексермейді. Администратор құқығы бар жеткілік құц.",
+            "visual_text": "JWT ЖҮЙЕСІ: Қолтаңба проверкасыз толықтырулар. Сыдырмалы администратор құру...",
+            "hint": "JWT нүктелілік 3 бөлінсе құрылады: header.payload.signature\n\nЕкінші бөлігі (payload) Base64 кодталуы:\n{\"user\": \"test\", \"role\": \"user\"}\n\nӨзгерт \"role\": \"admin\" және Base64 қайта кодта.\n\nДамырылған full token: header.modified_payload.signature",
+            "theory": "JWT қолтаңба расталуы тиіс. Рығрасталмаса, шабуырлау кез-келген жеткіліктің құрылыуы мүмкін.",
+            "outcome": "Администратор құқығымен сыдырмалы JWT жеткілік құрау"
+        },
+        "3": {
+            "id": 3,
+            "title": "Пароль Reset Token Болжау",
+            "situation": "Пароль іргелеу жеткіліктігі қауіпсіз емес көрейтіндіктемесі арқылы болжалуы мүмкін (төмен энтропия).",
+            "visual_text": "ІРГЕЛЕУ ЖҮЙЕСІ: Пароль іргелеу жеткіліктігін болжау...",
+            "hint": "Жеткіліктігі жиі болжалауға жолдасқан бөліктер бар:\n• Пайдаланушы аты (admin, root)\n• Күні (2026)\n• Орын сөздері (reset, token, admin)\n\nӘдісі: Base64 кодта:\nadmin_reset_token_secret_2026",
+            "theory": "Қорғау: криптографиялық сенді сілтеуді пайдалану, CSRF жеткіліктігі, IP байланысы, жеткіліктігінің ресімі.",
+            "outcome": "Пароль іргелеу жеткіліктігін болжау және администратор құқығын алу"
+        }
+    }
+}

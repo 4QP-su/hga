@@ -1,0 +1,89 @@
+{
+    "ru": {
+        "1": {
+            "id": 1,
+            "title": "Простой CSRF",
+            "situation": "Пользователь заходит на вредоносный сайт. Его браузер автоматически отправляет скрытый запрос на банк.",
+            "visual_text": "CSRF ATTACK INITIATED: Пользователь кликает кнопку 'LAUNCH ATTACK'...",
+            "hint": "Атака CSRF работает благодаря тому, что браузер автоматически отправляет куки с каждым запросом. Нет проверки источника (origin/referer).",
+            "theory": "CSRF (Cross-Site Request Forgery) — атака, когда злоумышленник заставляет пользователя совершить действие на другом сайте без его ведома.",
+            "outcome": "Простой CSRF без защиты от origen-проверки"
+        },
+        "2": {
+            "id": 2,
+            "title": "CSRF с параметрами",
+            "situation": "Сервер требует больше информации, но по-прежнему не проверяет origin. Укажи получателя и сумму перевода.",
+            "visual_text": "CSRF ATTACK: Передача денег без проверки источника...",
+            "hint": "Форма может содержать скрытые поля (hidden input) и отправляться автоматически. Без проверки CSRF-токена сервер выполняет любую форму.",
+            "theory": "Защита: CSRF-токены, проверка Referer, SameSite cookies, двойная отправка (POST + проверка).",
+            "outcome": "CSRF с передачей параметров (amount, recipient)"
+        },
+        "3": {
+            "id": 3,
+            "title": "CSRF через GET параметр",
+            "situation": "Даже 'простой' GET запрос может быть CSRF-атакой, если сервер выполняет изменение состояния.",
+            "visual_text": "CSRF ATTACK: Использование GET параметра для изменения данных...",
+            "hint": "GET запросы не должны изменять состояние сервера, но в реальности часто используются небезопасно. Пошли evil GET параметр: ?transfer=1000&to=hacker",
+            "theory": "RESTful API лучше: GET для чтения, POST/PUT/DELETE для изменений. И всегда проверяй CSRF-токен.",
+            "outcome": "CSRF через GET параметр без POST-body"
+        }
+    },
+    "en": {
+        "1": {
+            "id": 1,
+            "title": "Simple CSRF",
+            "situation": "User visits a malicious website. Their browser automatically sends a hidden request to the bank.",
+            "visual_text": "CSRF ATTACK INITIATED: User clicks 'LAUNCH ATTACK' button...",
+            "hint": "CSRF attacks work because browsers automatically send cookies with every request. No origin check is performed.",
+            "theory": "CSRF (Cross-Site Request Forgery) — an attack where an attacker tricks a user into performing an action on another website without their knowledge.",
+            "outcome": "Simple CSRF without origin verification"
+        },
+        "2": {
+            "id": 2,
+            "title": "CSRF with Parameters",
+            "situation": "Server requires more information, but still doesn't check origin. Specify recipient and transfer amount.",
+            "visual_text": "CSRF ATTACK: Transferring funds without origin check...",
+            "hint": "Forms can contain hidden fields that are submitted automatically. Without CSRF token validation, the server executes any form.",
+            "theory": "Defense: CSRF tokens, Referer header check, SameSite cookies, double-submit pattern.",
+            "outcome": "CSRF with parameters (amount, recipient)"
+        },
+        "3": {
+            "id": 3,
+            "title": "CSRF via GET Parameter",
+            "situation": "Even a 'simple' GET request can be a CSRF attack if the server performs state changes.",
+            "visual_text": "CSRF ATTACK: Using GET parameter to modify data...",
+            "hint": "GET requests should not modify server state, but in practice they often do unsafely. Send evil GET parameter: ?transfer=1000&to=hacker",
+            "theory": "RESTful API best practices: GET for reading, POST/PUT/DELETE for modifications. Always validate CSRF tokens.",
+            "outcome": "CSRF via GET parameter without POST body"
+        }
+    },
+    "kz": {
+        "1": {
+            "id": 1,
+            "title": "Қарапайым CSRF",
+            "situation": "Пайдаланушы зиянды веб-сайтқа келуі. Оның браузері автоматты түрде банкке құпия сұрау жібереді.",
+            "visual_text": "CSRF ШАБУЫЛЫ БАСТАЛДЫ: Пайдаланушы 'ATTACK ЖОЛДАУ' батырмасын басады...",
+            "hint": "CSRF шабуылдары ӘТ байқаусыз уақытта жұмыс істейді. Origin проверкасы жоқ.",
+            "theory": "CSRF (Cross-Site Request Forgery) — пайдаланушыны білмей-білместен әрекет істеуге мәжбүрлеген шабуыл.",
+            "outcome": "Қарапайым CSRF проверкасыз"
+        },
+        "2": {
+            "id": 2,
+            "title": "Параметрлер арқылы CSRF",
+            "situation": "Сервер көбірек ақпарат сұрайды, бірақ origin тексермейді. Алушы және сома белгілеңіз.",
+            "visual_text": "CSRF ШАБУЫСЫ: Өңделмеген ақшасыз аудару...",
+            "hint": "Формалар жасырын өрістерді болжау құрамында болуы және автоматты түрде жіберілуі мүмкін.",
+            "theory": "Қорғау: CSRF токендері, Origin тексеру, SameSite cookies.",
+            "outcome": "Параметрлер арқылы CSRF"
+        },
+        "3": {
+            "id": 3,
+            "title": "GET параметрі арқылы CSRF",
+            "situation": "Тіпті 'қарапайым' GET сұрауы да сервер өңдеген көндік CSRF шабуылы болуы мүмкін.",
+            "visual_text": "CSRF ШАБУЫСЫ: Деректерді өзгерту үшін GET параметрін пайдалану...",
+            "hint": "GET сұраулары сервер жағдайын өзгертпеуі керек, бірақ іс жүзінде жиынтықты қасқайлық пайдаланатын сайттар ұқсатқан сертіңіз.",
+            "theory": "RESTful API ең жақсы әдіс: GET оқу үшін, POST/PUT/DELETE өңдеу үшін.",
+            "outcome": "GET параметрі арқылы CSRF"
+        }
+    }
+}

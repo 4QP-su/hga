@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <title>HACKLAB // DASHBOARD</title>
+    <style>
+        :root {
+            --neon-green: #00ff41;
+            --soft-green: rgba(0, 255, 65, 0.12);
+            --bg-black: #050505;
+            --card-bg: #0a0a0a;
+            --border-dim: #004411;
+            --text-dim: #008f23;
+            --gold: #ffd700;
+            --error-red: #ff3e3e;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-black);
+            color: var(--neon-green);
+            font-family: 'Courier New', monospace;
+            min-height: 100vh;
+            animation: fadeIn 0.7s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        body::before {
+            content: " ";
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.08) 50%),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+            background-size: 100% 2px, 2px 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        /* ── TOPBAR ── */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 30px;
+            border-bottom: 1px solid var(--border-dim);
+            background: rgba(0, 0, 0, 0.6);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .topbar-logo {
+            font-size: 1rem;
+            letter-spacing: 4px;
+            color: var(--neon-green);
+            text-shadow: 0 0 10px rgba(0, 255, 65, 0.4);
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 0.8rem;
+        }
+
+        .stat-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 12px;
+            border: 1px solid var(--border-dim);
+            border-radius: 6px;
+            background: rgba(0, 255, 65, 0.03);
+        }
+
+        .stat-pill .label {
+            color: #555;
+        }
+
+        .stat-pill .val {
+            color: var(--gold);
+            font-weight: bold;
+        }
+
+        .stat-pill .xp-val {
+            color: var(--neon-green);
+            font-weight: bold;
+        }
+
+        .rank-badge {
+            padding: 5px 12px;
+            border: 1px solid var(--neon-green);
+            border-radius: 6px;
+            font-size: 0.75rem;
+            color: var(--neon-green);
+            background: rgba(0, 255, 65, 0.05);
+            letter-spacing: 1px;
+        }
+
+        .topbar-links {
+            display: flex;
+            gap: 6px;
+        }
+
+        .nav-link {
+            color: #444;
+            text-decoration: none;
+            font-size: 0.75rem;
+            padding: 5px 10px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+
+        .nav-link:hover {
+            color: var(--neon-green);
+            border-color: var(--border-dim);
+            background: var(--soft-green);
+        }
+
+        .nav-link.danger {
+            color: #ff3e3e44;
+        }
+
+        .nav-link.danger:hover {
+            color: var(--error-red);
+            border-color: var(--error-red);
+            background: rgba(255, 62, 62, 0.05);
+        }
+
+        /* ── LAYOUT ── */
+        .page {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            min-height: calc(100vh - 49px);
+        }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            border-right: 1px solid var(--border-dim);
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .sidebar-section-title {
+            font-size: 0.65rem;
+            color: #444;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+        }
+
+        /* Профиль */
+        .profile-block {
+            text-align: center;
+        }
+
+        .avatar {
+            width: 64px;
+            height: 64px;
+            border: 2px solid var(--neon-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            margin: 0 auto 12px;
+            background: rgba(0, 255, 65, 0.05);
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.15);
+        }
+
+        .profile-name {
+            font-size: 1rem;
+            color: #fff;
+            letter-spacing: 2px;
+            margin-bottom: 4px;
+        }
+
+        .profile-rank {
+            font-size: 0.7rem;
+            color: var(--neon-green);
+            letter-spacing: 2px;
+        }
+
+        /* XP bar */
+        .xp-block {
+            margin-top: 12px;
+        }
+
+        .xp-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.65rem;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        .xp-bar-track {
+            height: 4px;
+            background: #111;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .xp-bar-fill {
+            height: 100%;
+            background: var(--neon-green);
+            box-shadow: 0 0 6px var(--neon-green);
+            border-radius: 2px;
+            transition: width 1s ease;
+        }
+
+        /* Stats */
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #0d0d0d;
+            font-size: 0.8rem;
+        }
+
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+
+        .stat-row .s-label {
+            color: #555;
+        }
+
+        .stat-row .s-val {
+            color: #fff;
+        }
+
+        /* Sidebar nav */
+        .side-nav a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            color: #444;
+            text-decoration: none;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            transition: 0.3s;
+            margin-bottom: 4px;
+        }
+
+        .side-nav a:hover {
+            color: var(--neon-green);
+            border-color: var(--border-dim);
+            background: var(--soft-green);
+        }
+
+        .side-nav a .ico {
+            font-size: 1rem;
+        }
+
+        /* ── MAIN CONTENT ── */
+        .main {
+            padding: 40px;
+        }
+
+        .section-header {
+            font-size: 0.65rem;
+            color: #444;
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-dim);
+            padding-bottom: 10px;
+        }
+
+        /* Daily bonus banner */
+        .bonus-banner {
+            background: rgba(255, 215, 0, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 10px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            font-size: 0.8rem;
+        }
+
+        .bonus-banner .b-text {
+            color: var(--gold);
+        }
+
+        .bonus-banner .b-sub {
+            color: #555;
+            font-size: 0.7rem;
+            margin-top: 2px;
+        }
+
+        /* Lab cards grid */
+        .labs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .lab-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-dim);
+            border-radius: 12px;
+            padding: 28px;
+            text-decoration: none;
+            color: var(--neon-green);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            transition: transform 0.35s cubic-bezier(0.165, 0.84, 0.44, 1),
+                box-shadow 0.35s ease,
+                border-color 0.35s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .lab-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, transparent 0%, var(--soft-green) 100%);
+            opacity: 0;
+            transition: opacity 0.35s;
+        }
+
+        .lab-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--neon-green);
+            box-shadow: 0 10px 30px rgba(0, 255, 65, 0.1);
+        }
+
+        .lab-card:hover::after {
+            opacity: 1;
+        }
+
+        .lab-card-icon {
+            font-size: 1.6rem;
+            z-index: 1;
+        }
+
+        .lab-card-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #fff;
+            letter-spacing: 2px;
+            z-index: 1;
+        }
+
+        .lab-card-desc {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            line-height: 1.5;
+            z-index: 1;
+        }
+
+        .lab-progress-wrap {
+            z-index: 1;
+        }
+
+        .lab-progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.65rem;
+            color: #444;
+            margin-bottom: 5px;
+        }
+
+        .lab-progress-track {
+            height: 3px;
+            background: #111;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .lab-progress-fill {
+            height: 100%;
+            background: var(--neon-green);
+            box-shadow: 0 0 4px var(--neon-green);
+            border-radius: 2px;
+        }
+
+        .lab-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.7rem;
+            padding-top: 10px;
+            border-top: 1px solid #111;
+            z-index: 1;
+        }
+
+        .tag-ready {
+            background: var(--neon-green);
+            color: #000;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.65rem;
+        }
+
+        /* Recent activity */
+        .activity-block {
+            background: var(--card-bg);
+            border: 1px solid var(--border-dim);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .activity-title {
+            font-size: 0.8rem;
+            color: #fff;
+            letter-spacing: 3px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--border-dim);
+            padding-bottom: 10px;
+        }
+
+        .activity-empty {
+            color: #333;
+            font-size: 0.8rem;
+            text-align: center;
+            padding: 20px 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+        <div class="topbar-logo">// HACKLAB_OS v2.6</div>
+        <div class="topbar-right">
+            <div class="stat-pill">
+                <span class="label">BALANCE:</span>
+                <span class="val">${{ current_user.balance }}</span>
+            </div>
+            <div class="stat-pill">
+                <span class="label">XP:</span>
+                <span class="xp-val">{{ current_user.xp }}</span>
+            </div>
+            <div class="rank-badge">{{ rank.icon }} {{ rank.name | upper }}</div>
+            <div class="topbar-links">
+                <a href="/achievements" class="nav-link">TROPHIES</a>
+                <a href="/leaderboard" class="nav-link">LEADERBOARD</a>
+                <a href="/logout" class="nav-link danger">LOGOUT</a>
+            </div>
+        </div>
+    </div>
+    {% if user.is_admin %}
+    <div class="menu-item">
+        <a href="/admin" style="color: #ff4444;">[!] ACCESS_SYSTEM_CORE</a>
+    </div>
+    {% endif %}
+    <div class="page">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+
+            <div class="profile-block">
+                <div class="sidebar-section-title">AGENT_PROFILE</div>
+                <div class="avatar">&#x1F47E;</div>
+                <div class="profile-name">{{ current_user.username | upper }}</div>
+                <div class="profile-rank">{{ rank.icon }} {{ rank.name | upper }}</div>
+
+                {% if rank.next_xp %}
+                <div class="xp-block">
+                    <div class="xp-label">
+                        <span>XP: {{ current_user.xp }}</span>
+                        <span>NEXT: {{ rank.next_xp }}</span>
+                    </div>
+                    <div class="xp-bar-track">
+                        <div class="xp-bar-fill" style="width: {{ rank.progress_pct }}%"></div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <div>
+                <div class="sidebar-section-title">SYSTEM_STATS</div>
+                <div class="stat-row">
+                    <span class="s-label">BALANCE</span>
+                    <span class="s-val" style="color: var(--gold)">${{ current_user.balance }}</span>
+                </div>
+                <div class="stat-row">
+                    <span class="s-label">TOTAL XP</span>
+                    <span class="s-val">{{ current_user.xp }}</span>
+                </div>
+                <div class="stat-row">
+                    <span class="s-label">REGISTERED</span>
+                    <span class="s-val" style="color:#555; font-size:0.7rem">{{ current_user.created_at[:10] }}</span>
+                </div>
+            </div>
+
+            <div class="side-nav">
+                <div class="sidebar-section-title">NAVIGATION</div>
+                <a href="/sql-injection"><span class="ico">🔒</span> SQL_INJECTION</a>
+                <a href="/XSS"><span class="ico">⚡</span> XSS_ATTACKS</a>
+                <a href="/achievements"><span class="ico">🏆</span> ACHIEVEMENTS</a>
+                <a href="/leaderboard"><span class="ico">📊</span> LEADERBOARD</a>
+                <a href="/profile"><span class="ico">👤</span> PROFILE</a>
+                {% if current_user.is_admin %}
+                <a href="/admin"
+                    style="color: var(--error-red) !important; border-color: rgba(255,62,62,0.3) !important;">
+                    <span class="ico">⚙️</span> ADMIN_PANEL
+                </a>
+                {% endif %}
+            </div>
+
+        </aside>
+
+        <!-- MAIN -->
+        <main class="main">
+
+            <div class="section-header">// MISSION_CONTROL_CENTER</div>
+
+            <div class="bonus-banner">
+                <div>
+                    <div class="b-text">> DAILY BONUS ACTIVATED</div>
+                    <div class="b-sub">+$100 credited to your account upon login</div>
+                </div>
+                <span style="color: var(--gold); font-size: 1.2rem;">⚡</span>
+            </div>
+
+            <div class="section-header">// SELECT_TARGET_MODULE</div>
+
+            <div class="labs-grid">
+
+                <!-- SQL Card -->
+                <a href="/sql-injection" class="lab-card">
+                    <div class="lab-card-icon">🔒</div>
+                    <div class="lab-card-title">SQL_INJECTION</div>
+                    <div class="lab-card-desc">
+                        Проникновение в базы данных через уязвимые поля ввода. 6 уровней сложности.
+                    </div>
+                    <div class="lab-progress-wrap">
+                        <div class="lab-progress-label">
+                            <span>PROGRESS</span>
+                            <span>{{ sql_done }}/6</span>
+                        </div>
+                        <div class="lab-progress-track">
+                            <div class="lab-progress-fill" style="width: {{ (sql_done / 6 * 100) | int }}%"></div>
+                        </div>
+                    </div>
+                    <div class="lab-card-footer">
+                        <span style="color: #444">PATH: root/sql/</span>
+                        <span class="tag-ready">READY</span>
+                    </div>
+                </a>
+
+                <!-- XSS Card -->
+                <a href="/XSS" class="lab-card">
+                    <div class="lab-card-icon">⚡</div>
+                    <div class="lab-card-title">XSS_ATTACKS</div>
+                    <div class="lab-card-desc">
+                        Внедрение вредоносных скриптов на сторону клиента. Перехват куки и DOM.
+                    </div>
+                    <div class="lab-progress-wrap">
+                        <div class="lab-progress-label">
+                            <span>PROGRESS</span>
+                            <span>{{ xss_done }}/2</span>
+                        </div>
+                        <div class="lab-progress-track">
+                            <div class="lab-progress-fill" style="width: {{ (xss_done / 2 * 100) | int }}%"></div>
+                        </div>
+                    </div>
+                    <div class="lab-card-footer">
+                        <span style="color: #444">PATH: root/xss/</span>
+                        <span class="tag-ready">READY</span>
+                    </div>
+                </a>
+
+                <!-- CSRF Card (coming soon) -->
+                <div class="lab-card" style="opacity: 0.35; cursor: not-allowed;">
+                    <div class="lab-card-icon">🛡️</div>
+                    <div class="lab-card-title">CSRF_ATTACKS</div>
+                    <div class="lab-card-desc">
+                        Межсайтовая подделка запросов. Скоро доступно.
+                    </div>
+                    <div class="lab-card-footer">
+                        <span style="color: #333">PATH: root/csrf/</span>
+                        <span
+                            style="color:#333; border:1px solid #222; padding:2px 8px; border-radius:4px; font-size:0.65rem">LOCKED</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="section-header">// SYSTEM_LOG</div>
+            <div class="activity-block">
+                <div class="activity-title">> RECENT_ACTIVITY</div>
+                <div class="activity-empty">// Активность отображается после прохождения уровней</div>
+            </div>
+
+        </main>
+    </div>
+    <div id="backdoor-container" style="position: fixed; bottom: 10px; right: 10px; opacity: 0.05;">
+        <input type="text" id="admin-cmd" placeholder="_"
+            style="background: transparent; border: none; color: #00ff88; font-family: monospace; outline: none; width: 100px;">
+    </div>
+
+    <div id="admin-terminal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; align-items: center; justify-content: center;">
+        <div style="width: 400px; border: 1px solid #00ff88; padding: 20px; background: #0a0a0a;">
+            <div style="font-size: 10px; color: #444; margin-bottom: 10px;">SYS_AUTHENTICATION_REQUIRED ></div>
+            <input type="password" id="admin-input" placeholder="ENTER_COMMAND..."
+                style="width: 100%; background: transparent; border: none; border-bottom: 1px solid #00ff88; color: #00ff88; font-family: 'Courier New', monospace; outline: none; font-size: 16px;">
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('keydown', function (e) {
+            // Проверяем: зажат Shift и нажата клавиша "7" (не на нумпаде, а в верхнем ряду)
+            // e.code === 'Digit7' работает надежнее, чем e.key
+            if (e.shiftKey && e.code === 'Digit7') {
+                e.preventDefault(); // Блокируем стандартное действие
+
+                const term = document.getElementById('admin-terminal');
+                term.style.display = 'flex';
+                document.getElementById('admin-input').focus();
+            }
+
+            // Закрыть окно на Escape
+            if (e.key === 'Escape') {
+                const term = document.getElementById('admin-terminal');
+                term.style.display = 'none';
+            }
+        });
+
+        document.getElementById('admin-input').addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                // Твой секретный пароль
+                if (this.value === 'unlock_root') {
+                    window.location.href = '/internal/system/console/v2';
+                } else {
+                    // Прячем терминал, если пароль неверный
+                    document.getElementById('admin-terminal').style.display = 'none';
+                    this.value = '';
+                }
+            }
+        });
+    </script>
+
+</body>
+
+</html>

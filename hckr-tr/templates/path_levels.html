@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Mission Selection | Path Traversal Lab</title>
+    <style>
+        :root {
+            --neon-orange: #ff8800;
+            --soft-orange: rgba(255, 136, 0, 0.15);
+            --bg-black: #050505;
+            --card-bg: #0a0a0a;
+            --border-dim: #552200;
+            --text-dim: #cc6600;
+        }
+
+        body {
+            background-color: var(--bg-black);
+            color: var(--neon-orange);
+            font-family: 'Courier New', monospace;
+            padding: 40px;
+            margin: 0;
+            animation: fadeInPage 0.8s ease-out;
+        }
+
+        @keyframes fadeInPage {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.8rem;
+            text-transform: uppercase;
+            letter-spacing: 6px;
+            margin-bottom: 50px;
+            border-bottom: 1px solid var(--border-dim);
+            padding-bottom: 20px;
+        }
+
+        .levels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .level-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-dim);
+            padding: 30px;
+            text-decoration: none;
+            color: var(--neon-orange);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1),
+                box-shadow 0.4s ease,
+                border-color 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .level-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--neon-orange);
+            box-shadow: 0 10px 30px rgba(255, 136, 0, 0.1);
+        }
+
+        .level-card.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .level-card.locked:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .level-id {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            z-index: 2;
+        }
+
+        .level-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #fff;
+            z-index: 2;
+        }
+
+        .theory-preview {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            line-height: 1.5;
+            border-top: 1px solid #552200;
+            padding-top: 15px;
+            margin-bottom: 20px;
+            height: 60px;
+            overflow: hidden;
+            z-index: 2;
+        }
+
+        .status-box {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.7rem;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border-dim);
+            z-index: 2;
+        }
+
+        .tag-active {
+            color: #000;
+            background: var(--neon-orange);
+            padding: 2px 8px;
+            font-weight: bold;
+            border-radius: 4px;
+            box-shadow: 0 0 10px var(--soft-orange);
+        }
+
+        .back-link {
+            display: block;
+            width: fit-content;
+            margin: 60px auto;
+            padding: 12px 25px;
+            color: #444;
+            text-decoration: none;
+            background: #222;
+            border: 1px solid #444;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            background: #333;
+            border-color: #777;
+            color: #aaa;
+        }
+
+        .progress-bar-track {
+            background: #111;
+            height: 10px;
+            border-radius: 5px;
+            border: 1px solid #222;
+        }
+
+        .progress-bar-fill {
+            background: var(--neon-orange);
+            height: 100%;
+            border-radius: 5px;
+            box-shadow: 0 0 10px var(--soft-orange);
+            transition: width 0.3s ease;
+        }
+
+        .progress-wrap {
+            width: 400px;
+            margin: 0 auto 40px auto;
+        }
+
+        .progress-label {
+            font-size: 0.7rem;
+            color: #555;
+            margin-bottom: 5px;
+            text-align: left;
+        }
+
+        .progress-count {
+            font-size: 0.8rem;
+            text-align: right;
+            margin-top: 5px;
+            color: var(--neon-orange);
+        }
+
+        .technique-tags {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            padding: 4px 12px;
+            border-radius: 4px;
+            border: 1px solid;
+            background: rgba(255, 136, 0, 0.1);
+            color: var(--neon-orange);
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>[!] PATH_TRAVERSAL_TARGET_INFRASTRUCTURE</h1>
+    <div class="technique-tags">
+        <span class="tag">Directory Escape</span>
+        <span class="tag">File Read</span>
+        <span class="tag">Encoding Bypass</span>
+    </div>
+
+    {% set done_count = levels | selectattr('completed') | list | length %}
+    <div class="progress-wrap">
+        <div class="progress-label">PATH_TRAVERSAL_PROGRESS</div>
+        <div class="progress-bar-track">
+            <div class="progress-bar-fill" style="width: {{ (done_count / levels|length * 100) | int }}%;"></div>
+        </div>
+        <div class="progress-count">{{ done_count }}/{{ levels|length }} NODES</div>
+    </div>
+
+    <div class="levels-grid">
+        {% for level in levels %}
+        <a class="level-card {% if not level.unlocked %}locked{% endif %}"
+            href="{% if level.unlocked %}{{ url_for('path.path_level', level_id=level.id) }}{% else %}#{% endif %}">
+            <div class="level-id">PATH: root/targets/level_0{{ level.id }}</div>
+            <div class="level-title">> {{ level.title }}</div>
+            <div class="theory-preview">
+                DATA_INTEL: {{ level.theory[:115] }}...
+            </div>
+
+            <div class="status-box">
+                {% if level.completed %}
+                <span class="tag-active">✓ PASSED</span>
+                {% elif level.unlocked %}
+                <span style="color: #ffff00;">» UNLOCKED</span>
+                {% else %}
+                <span style="color: #ff4444;">» LOCKED</span>
+                {% endif %}
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+
+    <a href="{{ url_for('main.index') }}" class="back-link">← BACK TO CONSOLE</a>
+
+</body>
+
+</html>

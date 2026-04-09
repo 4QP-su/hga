@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <title>TERMINAL ACCESS: Level {{ level.id }}</title>
+    <style>
+        :root {
+            --neon-green: #00ff41;
+            --dark-green: #004411;
+            --bg-black: #0a0a0a;
+            --gold: #ffd700;
+            --error-red: #ff3e3e;
+        }
+
+        body {
+            background-color: var(--bg-black);
+            color: var(--neon-green);
+            font-family: 'Courier New', monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+            margin: 0;
+            overflow-x: hidden;
+            animation: fadeIn 0.6s ease;
+            /* Плавное появление */
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Эффект старого монитора */
+        body::before {
+            content: " ";
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+            background-size: 100% 2px, 2px 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        /* Тот самый ровный магазин */
+        .shop-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 215, 0, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            padding: 10px 20px;
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            /* Округление */
+            box-sizing: border-box;
+            transition: 0.3s;
+        }
+
+        .btn-shop {
+            text-decoration: none;
+            padding: 6px 12px;
+            border: 1px solid;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-left: 10px;
+            transition: 0.3s;
+            border-radius: 6px;
+        }
+
+        .btn-hint {
+            color: var(--gold);
+            border-color: var(--gold);
+        }
+
+        .btn-hint:hover {
+            background: var(--gold);
+            color: #000;
+            box-shadow: 0 0 10px var(--gold);
+        }
+
+        .btn-solution {
+            color: var(--error-red);
+            border-color: var(--error-red);
+        }
+
+        .btn-solution:hover {
+            background: var(--error-red);
+            color: #fff;
+            box-shadow: 0 0 10px var(--error-red);
+        }
+
+        /* Твои любимые блоки-карточки */
+        .card,
+        .form-box,
+        .info-block {
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--dark-green);
+            padding: 25px;
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 25px;
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.1);
+            border-radius: 15px;
+            /* Округление терминала */
+            box-sizing: border-box;
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card:hover,
+        .form-box:hover {
+            transform: scale(1.01);
+            border-color: var(--neon-green);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+        }
+
+        h2,
+        h3 {
+            border-bottom: 1px solid var(--dark-green);
+            padding-bottom: 10px;
+            color: #fff;
+            text-transform: uppercase;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            margin-top: 0;
+        }
+
+        p,
+        b {
+            color: #00cc33;
+            line-height: 1.5;
+        }
+
+        /* Поля ввода */
+        input {
+            width: 100%;
+            background: #000;
+            border: 1px solid var(--dark-green);
+            color: var(--neon-green);
+            padding: 12px;
+            margin-bottom: 15px;
+            font-family: inherit;
+            box-sizing: border-box;
+            outline: none;
+            border-radius: 6px;
+        }
+
+        input:focus {
+            border-color: var(--neon-green);
+            background: #001100;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: transparent;
+            color: var(--neon-green);
+            border: 1px solid var(--neon-green);
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 2px;
+            transition: 0.3s ease;
+            border-radius: 8px;
+        }
+
+        button:hover {
+            background: var(--neon-green);
+            box-shadow: 0 0 20px var(--soft-green);
+            transform: translateY(-2px);
+        }
+
+        /* Цветовая индикация спец-блоков */
+        .message-success {
+            border-color: #fff;
+            color: #fff;
+            text-align: center;
+        }
+
+        .solution-block {
+            border-color: var(--error-red);
+            color: var(--error-red);
+        }
+
+        .hint-block {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .back {
+            color: #444;
+            text-decoration: none;
+            margin-top: 10px;
+            transition: 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 40px;
+            padding: 12px 25px;
+            color: #444;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-size: 0.8rem;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            transition: all 0.4s ease;
+            /* Убрали left: 50% и transform, так как body и так flex-center */
+        }
+
+        .back-link:hover {
+            color: var(--neon-green);
+            border-color: var(--neon-green);
+            background: rgba(0, 255, 65, 0.05);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+            transform: translateY(-3px);
+            /* Просто подъем вверх */
+        }
+
+        .back-link::before {
+            content: '<< ';
+            opacity: 0;
+            transition: 0.3s;
+        }
+
+        .back-link:hover::before {
+            opacity: 1;
+        }
+
+        .back:hover {
+            color: var(--neon-green);
+        }
+
+        .status-info {
+            font-size: 0.8rem;
+            color: var(--dark-green);
+            text-transform: uppercase;
+            margin-top: 5px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="shop-bar">
+        <div style="font-weight: bold;">
+            <span style="color: #666;">> BALANCE:</span>
+            <span style="color: var(--gold);">${{ balance }}</span>
+        </div>
+        <div>
+            {% if not hint %}
+            <a href="?buy=hint" class="btn-shop btn-hint">[ BUY_HINT ]</a>
+            {% endif %}
+            {% if not solution %}
+            <a href="?buy=solution" class="btn-shop btn-solution">[ BUY_EXPLOIT ]</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="status-info">
+        CURRENT_NODE: 0{{ level.id }} | ENCRYPTION: SQL_BASE_V1
+    </div>
+
+    <div class="card">
+        <h2>> THEORY_FILE_INFO</h2>
+        <p>{{ level.theory }}</p>
+
+        <h3>> MISSION_OBJECTIVE</h3>
+        <p><b>{{ level.situation }}</b></p>
+    </div>
+
+    <div class="form-box">
+        <h3>> AUTH_GATEWAY_ACCESS</h3>
+        <form method="POST">
+            <input type="text" name="username" placeholder="AUTH_USERNAME" required autocomplete="off">
+            <input type="password" name="password" placeholder="AUTH_PASSWORD" required autocomplete="off">
+            <button type="submit">Execute_Exploit (Login)</button>
+        </form>
+    </div>
+
+    {% if message %}
+    <div class="info-block {% if '✅' in message %}message-success{% else %}solution-block{% endif %}">
+        > SYSTEM_LOG: {{ message }}
+    </div>
+    {% endif %}
+
+    {% if hint %}
+    <div class="info-block hint-block">
+        [!] AI_ADVISOR_HINT: {{ hint }}
+    </div>
+    {% endif %}
+
+    {% if solution %}
+    <div class="info-block solution-block">
+        [!!!] MASTER_KEY_LEAK: {{ solution }}
+    </div>
+    {% endif %}
+
+    <div style="width: 100%; text-align: center; margin-bottom: 50px;">
+        <a href="/dashboard" class="btn-hack">ABORT_MISSION_AND_RETURN_TO_BASE</a>
+    </div>
+
+</body>
+
+</body>
+
+</html>

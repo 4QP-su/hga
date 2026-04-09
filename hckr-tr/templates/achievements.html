@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <title>TERMINAL | Trophies_&_Achievements</title>
+    <style>
+        :root {
+            --neon-green: #00ff41;
+            --dark-green: #004411;
+            --bg-black: #0a0a0a;
+            --gold: #ffd700;
+        }
+
+        body {
+            background-color: var(--bg-black);
+            color: var(--neon-green);
+            font-family: 'Courier New', monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+            margin: 0;
+            overflow-x: hidden;
+            animation: fadeIn 0.8s ease-out;
+            /* Плавное появление */
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Эффект старого CRT монитора */
+        body::before {
+            content: " ";
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+            background-size: 100% 2px, 2px 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        /* Ровный бар магазина сверху (как в SQL) */
+        .shop-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 215, 0, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            padding: 10px 20px;
+            width: 100%;
+            max-width: 900px;
+            margin-bottom: 25px;
+            border-radius: 12px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            border-bottom: 1px solid var(--dark-green);
+            padding-bottom: 15px;
+            color: #fff;
+            text-transform: uppercase;
+            font-size: 1.5rem;
+            letter-spacing: 5px;
+            margin-bottom: 40px;
+        }
+
+        /* Сетка красивых округлых карточек */
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            width: 100%;
+            max-width: 900px;
+            margin-bottom: 40px;
+        }
+
+        .badge-card {
+            background-color: #000;
+            border: 1px solid var(--dark-green);
+            padding: 25px;
+            border-radius: 15px;
+            /* Округлость */
+            box-sizing: border-box;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: left;
+        }
+
+        /* Стиль полученного достижения (unlocked) */
+        .earned {
+            border-color: var(--neon-green);
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.1);
+        }
+
+        .badge-card.earned:hover {
+            box-shadow: 0 0 25px rgba(0, 255, 65, 0.2);
+            border-color: var(--neon-green);
+        }
+
+        /* Стиль заблокированного достижения (locked) */
+        .locked {
+            opacity: 0.3;
+            filter: grayscale(1);
+        }
+
+        .status-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--dark-green);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .level-path {
+            font-size: 0.75rem;
+            color: #888;
+        }
+
+        .earned .level-path {
+            color: var(--neon-green);
+        }
+
+        .status-tag {
+            font-size: 0.7rem;
+            font-weight: bold;
+            padding: 3px 6px;
+            text-transform: uppercase;
+        }
+
+        .locked .status-tag {
+            color: #888;
+            border: 1px solid #333;
+        }
+
+        .earned .status-tag {
+            color: #000;
+            background-color: var(--neon-green);
+        }
+
+        .level-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 0;
+            color: #fff;
+        }
+
+        .achievement-desc {
+            color: #888;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        .back {
+            color: #444;
+            text-decoration: none;
+            margin-top: 20px;
+            transition: 0.3s;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        .back:hover {
+            color: var(--neon-green);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="shop-bar">
+        <div style="font-weight: bold;">
+            <span style="color: #666;">> BALANCE:</span>
+            <span style="color: var(--gold);">${{ balance }}</span>
+        </div>
+        <div style="font-size: 0.8rem; color: var(--dark-green);">[ SYSTEM: ACQUIRED ]</div>
+    </div>
+
+    <h1>[醇] INTERCEPTED_TROPHIES</h1>
+
+    <div class="achievements-grid">
+
+        <div class="badge-card {% if progress.sql_1 %}earned{% else %}locked{% endif %}">
+            <div class="status-header">
+                <span class="level-path">SQL/INTEL/01</span>
+                <span class="status-tag">{% if progress.sql_1 %}ACQUIRED{% else %}LOCKED{% endif %}</span>
+            </div>
+            <h3 class="level-title">> BYPASS_INIT</h3>
+            <p class="achievement-desc">Успешный обход базовой формы авторизации через ' OR 1=1.</p>
+        </div>
+
+        <div class="badge-card {% if progress.sql_2 %}earned{% else %}locked{% endif %}">
+            <div class="status-header">
+                <span class="level-path">SQL/INTEL/02</span>
+                <span class="status-tag">{% if progress.sql_2 %}ACQUIRED{% else %}LOCKED{% endif %}</span>
+            </div>
+            <h3 class="level-title">> COMMENT_GHOST</h3>
+            <p class="achievement-desc">Использование синтаксиса комментариев для нейтрализации серверного кода.</p>
+        </div>
+
+        <div class="badge-card {% if progress.xss_1 %}earned{% else %}locked{% endif %}">
+            <div class="status-header">
+                <span class="level-path">XSS/PAYLOAD/01</span>
+                <span class="status-tag">{% if progress.xss_1 %}ACQUIRED{% else %}LOCKED{% endif %}</span>
+            </div>
+            <h3 class="level-title">> ALERT_INJECTOR</h3>
+            <p class="achievement-desc">Первое исполнение произвольного кода в браузере. &lt;script&gt; исполнен.</p>
+        </div>
+
+        <div class="badge-card {% if progress.xss_2 %}earned{% else %}locked{% endif %}">
+            <div class="status-header">
+                <span class="level-path">XSS/PAYLOAD/02</span>
+                <span class="status-tag">{% if progress.xss_2 %}ACQUIRED{% else %}LOCKED{% endif %}</span>
+            </div>
+            <h3 class="level-title">> CASE_CRACKER</h3>
+            <p class="achievement-desc">Обход фильтров ключевых слов через манипуляцию регистром (sCrIpT).</p>
+        </div>
+
+        <div class="badge-card {% if progress.xss_3 %}earned{% else %}locked{% endif %}">
+            <div class="status-header">
+                <span class="level-path">XSS/PAYLOAD/03</span>
+                <span class="status-tag">{% if progress.xss_3 %}ACQUIRED{% else %}LOCKED{% endif %}</span>
+            </div>
+            <h3 class="level-title">> EVENT_REAPER</h3>
+            <p class="achievement-desc">Запуск кода через обработчики событий (onerror/onmouseover) без тега script.</p>
+        </div>
+
+        <div class="badge-card {% if progress.rich_kid %}earned{% else %}locked{% endif %}">
+            <div class="status-header">
+                <span class="level-path">ECONOMY/NET_WORTH</span>
+                <span class="status-tag">{% if progress.rich_kid %}ACQUIRED{% else %}LOCKED{% endif %}</span>
+            </div>
+            <h3 class="level-title">> BLACK_MARKET_WHALE</h3>
+            <p class="achievement-desc">Накоплено более $500 на теневом счету. Деньги — это власть.</p>
+        </div>
+
+        <div class="badge-card {% if progress.heavy_buyer %}earned{% else %}locked{% endif %}">
+            <div class="status-header">
+                <span class="level-path">SYS/KNOWLEDGE</span>
+                <span class="status-tag">{% if progress.heavy_buyer %}ACQUIRED{% else %}LOCKED{% endif %}</span>
+            </div>
+            <h3 class="level-title">> DATA_ADDICT</h3>
+            <p class="achievement-desc">Вы купили 3 или более разведданных. Знание стоит любых денег.</p>
+        </div>
+
+        <div class="badge-card {% if progress.completionist %}earned{% else %}locked{% endif %}">
+            <div class="status-header">
+                <span class="level-path">GLOBAL/SYST_OVERRIDE</span>
+                <span class="status-tag">{% if progress.completionist %}ACQUIRED{% else %}LOCKED{% endif %}</span>
+            </div>
+            <h3 class="level-title">> FULL_STACK_THREAT</h3>
+            <p class="achievement-desc">Универсальный взломщик. Базовые навыки SQL и XSS подтверждены.</p>
+        </div>
+
+    </div>
+
+    <a href="/dashboard" class="back"> [<< RETURN_TO_BASE]</a>
+
+</body>
+
+</html>

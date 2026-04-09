@@ -1,0 +1,152 @@
+{
+  "ru": {
+    "1": {
+      "title": "Классический обход",
+      "situation": "войдите как admin без пароля.",
+      "visual_text": "SYSTEM: Ожидание первичной авторизации...",
+      "hint": "Попробуй в поле LOGIN ввести: ' OR '1'='1 --\n\nКавычка закрывает строку, а OR 1=1 делает условие всегда истинным. Комментарий -- отсекает остальную часть запроса.",
+      "theory": "Основа SQLi: кавычка разрывает строку, а OR 1=1 делает условие истинным.",
+      "outcome": "Обход аутентификации без знания пароля."
+    },
+    "2": {
+      "title": "Фильтрация комментариев",
+      "situation": "обойдите фильтр, используя спецсимволы.",
+      "visual_text": "WARNING: Обнаружен WAF (фильтр)...",
+      "hint": "Фильтр может блокировать '--'. Попробуй '#' или написать admin'-- без пробела.\n\nКомментарии позволяют «отрезать» остаток оригинального SQL-запроса.",
+      "theory": "Комментарии позволяют отсечь остальную часть оригинального SQL-запроса.",
+      "outcome": "Обход WAF через альтернативные символы комментария."
+    },
+    "3": {
+      "title": "Поиск колонок",
+      "situation": "определите количество столбцов в таблице.",
+      "visual_text": "SCANNING: Анализ структуры через ORDER BY...",
+      "hint": "В поле LOGIN попробуй: ' ORDER BY 3 --\n\nЕсли нет ошибки — в таблице минимум 3 колонки. Увеличивай число, пока не появится ошибка.",
+      "theory": "ORDER BY помогает узнать структуру таблицы методом перебора.",
+      "outcome": "Определение точного числа столбцов для UNION-атаки."
+    },
+    "4": {
+      "title": "Извлечение данных",
+      "situation": "выведите версию базы данных на экран.",
+      "visual_text": "EXPLOIT: Подготовка UNION SELECT запроса...",
+      "hint": "Попробуй: ' UNION SELECT 1, @@version, 3 --\n\nUNION позволяет объединить результат твоего запроса с данными системных функций.",
+      "theory": "UNION объединяет результаты двух запросов в один вывод.",
+      "outcome": "Извлечение версии СУБД через UNION SELECT."
+    },
+    "5": {
+      "title": "Карта таблиц",
+      "situation": "узнайте имя секретной таблицы в системе.",
+      "visual_text": "DB_MAP: Доступ к системным таблицам...",
+      "hint": "Попробуй: ' UNION SELECT 1, table_name, 3 FROM information_schema.tables --\n\ninformation_schema.tables содержит информацию обо всех таблицах.",
+      "theory": "В MySQL системные таблицы хранят метаданные о всей базе данных.",
+      "outcome": "Получение списка всех таблиц через information_schema."
+    },
+    "6": {
+      "title": "Финальный Флаг",
+      "situation": "достаньте секретный FLAG из найденной таблицы.",
+      "visual_text": "FINAL: Чтение защищенного сектора данных...",
+      "hint": "Когда узнаешь имя таблицы и колонки:\n' UNION SELECT 1, flag_column, 3 FROM secret_table --\n\nЦель — вытащить данные, к которым нет прямого доступа.",
+      "theory": "Цель достигнута: чтение данных, к которым нет прямого доступа.",
+      "outcome": "Извлечение секретного флага из скрытой таблицы."
+    }
+  },
+  "kz": {
+    "1": {
+      "title": "Классикалық айналып өту",
+      "situation": "admin ретінде парольсіз кіріңіз.",
+      "visual_text": "ЖҮЙЕ: Алғашқы авторизацияны күту...",
+      "hint": "LOGIN өрісіне: ' OR '1'='1 -- деп жазып көріңіз.\n\nТырнақша жолды жабады, ал OR 1=1 шартты әрқашан рас етеді.",
+      "theory": "SQLi негізі: тырнақша жолды бұзады, OR 1=1 шартты ақиқат етеді.",
+      "outcome": "Құпия сөзді білмей-ақ аутентификация жүйесінен өту."
+    },
+    "2": {
+      "title": "Сүзгіні айналып өту",
+      "situation": "арнайы таңбаларды қолданып сүзгіні айналып өтіңіз.",
+      "visual_text": "ЕСКЕРТУ: WAF табылды...",
+      "hint": "'#' немесе admin'-- қолданып көріңіз.",
+      "theory": "Түсініктемелер SQL сұранысының қалған бөлігін алып тастайды.",
+      "outcome": "Балама түсініктеме таңбалары арқылы WAF айналып өту."
+    },
+    "3": {
+      "title": "Бағандарды іздеу",
+      "situation": "кестедегі бағандар санын анықтаңыз.",
+      "visual_text": "СКАНЕРЛЕУ: ORDER BY арқылы талдау...",
+      "hint": "' ORDER BY 3 -- деп жазып көріңіз.",
+      "theory": "ORDER BY іріктеу әдісімен кесте құрылымын анықтайды.",
+      "outcome": "UNION шабуылы үшін бағандар санын анықтау."
+    },
+    "4": {
+      "title": "Деректерді алу",
+      "situation": "деректер қорының нұсқасын шығарыңыз.",
+      "visual_text": "ЭКСПЛОИТ: UNION SELECT дайындалуда...",
+      "hint": "' UNION SELECT 1, @@version, 3 --",
+      "theory": "UNION екі сұраныстың нәтижелерін біріктіреді.",
+      "outcome": "UNION SELECT арқылы ДҚБЖ нұсқасын алу."
+    },
+    "5": {
+      "title": "Кестелер картасы",
+      "situation": "құпия кестенің атын біліңіз.",
+      "visual_text": "DB_MAP: Жүйелік кестелерге қол жеткізу...",
+      "hint": "' UNION SELECT 1, table_name, 3 FROM information_schema.tables --",
+      "theory": "Жүйелік кестелер бүкіл дерекқор туралы метадеректерді сақтайды.",
+      "outcome": "information_schema арқылы барлық кестелер тізімін алу."
+    },
+    "6": {
+      "title": "Соңғы Флаг",
+      "situation": "табылған кестеден FLAG алыңыз.",
+      "visual_text": "ФИНАЛ: Қорғалған секторды оқу...",
+      "hint": "' UNION SELECT 1, flag_column, 3 FROM secret_table --",
+      "theory": "Мақсат: тікелей қолжетімсіз деректерді оқу.",
+      "outcome": "Жасырын кестеден құпия флагты алу."
+    }
+  },
+  "en": {
+    "1": {
+      "title": "Classic Bypass",
+      "situation": "login as admin without a password.",
+      "visual_text": "SYSTEM: Awaiting primary authorization...",
+      "hint": "Try in LOGIN field: ' OR '1'='1 --\n\nThe quote closes the string, OR 1=1 makes the condition always true. -- comments out the rest.",
+      "theory": "SQLi basics: a quote breaks the string, OR 1=1 makes the condition true.",
+      "outcome": "Bypass authentication without knowing the password."
+    },
+    "2": {
+      "title": "Comment Filter",
+      "situation": "bypass the filter using special characters.",
+      "visual_text": "WARNING: Simple WAF detected...",
+      "hint": "Filter may block '--'. Try '#' or write admin'-- without a space.",
+      "theory": "Comments allow you to cut off the rest of the original SQL query.",
+      "outcome": "Bypass WAF via alternative comment characters."
+    },
+    "3": {
+      "title": "Column Count",
+      "situation": "determine the number of columns in the table.",
+      "visual_text": "SCANNING: Analyzing structure via ORDER BY...",
+      "hint": "Try: ' ORDER BY 3 --\n\nNo error = at least 3 columns. Increase until error appears.",
+      "theory": "ORDER BY helps find table structure by trial and error.",
+      "outcome": "Determine exact column count for UNION attack."
+    },
+    "4": {
+      "title": "Data Extraction",
+      "situation": "display the database version on screen.",
+      "visual_text": "EXPLOIT: Preparing UNION SELECT query...",
+      "hint": "Try: ' UNION SELECT 1, @@version, 3 --",
+      "theory": "UNION combines results of two queries into one output.",
+      "outcome": "Extract DBMS version via UNION SELECT."
+    },
+    "5": {
+      "title": "Table Map",
+      "situation": "find the name of the secret table.",
+      "visual_text": "DB_MAP: Accessing system tables...",
+      "hint": "Try: ' UNION SELECT 1, table_name, 3 FROM information_schema.tables --",
+      "theory": "information_schema.tables contains metadata about all tables.",
+      "outcome": "Get full table list via information_schema."
+    },
+    "6": {
+      "title": "Final Flag",
+      "situation": "extract the secret FLAG from the found table.",
+      "visual_text": "FINAL: Reading protected data sector...",
+      "hint": "' UNION SELECT 1, flag_column, 3 FROM secret_table --",
+      "theory": "Goal: reading data with no direct access.",
+      "outcome": "Extract secret flag from hidden table."
+    }
+  }
+}

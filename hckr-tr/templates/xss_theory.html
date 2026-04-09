@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="{{ curr_lang }}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{{ t.xss_theory_html_title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            background: #050505;
+            color: #00e5ff;
+            font-family: 'Courier New', monospace;
+            padding: 50px;
+            line-height: 1.6;
+        }
+
+        .theory-container {
+            max-width: 820px;
+            margin: 0 auto;
+            border: 1px solid #553300;
+            padding: 32px;
+            background: #080808;
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.06);
+        }
+
+        .theory-container h1 {
+            color: #ffd700;
+            letter-spacing: 2px;
+            font-size: 1.05rem;
+            margin-top: 0;
+        }
+
+        .theory-container section p {
+            margin: 0.85em 0;
+            color: #b8e8ff;
+        }
+
+        .theory-container code {
+            color: #ffd700;
+            background: #111;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .quiz-box {
+            margin-top: 36px;
+            border-top: 1px dashed #ffd700;
+            padding-top: 24px;
+        }
+
+        .quiz-box h3 {
+            color: #ffd700;
+            font-size: 0.95rem;
+        }
+
+        .q-block {
+            margin: 22px 0;
+            padding: 16px;
+            background: rgba(255, 215, 0, 0.04);
+            border-radius: 8px;
+            border: 1px solid #2a2210;
+        }
+
+        .q-block .q-num {
+            color: #666;
+            font-size: 0.75rem;
+            margin: 0 0 8px 0;
+        }
+
+        .q-block p {
+            margin: 0 0 10px 0;
+            color: #e8f8ff;
+        }
+
+        .q-block label {
+            display: block;
+            margin: 6px 0;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        .q-block input {
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        .btn-hack {
+            margin-top: 16px;
+            background: transparent;
+            border: 1px solid #ffd700;
+            color: #ffd700;
+            padding: 12px 24px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+        }
+
+        .btn-hack:hover {
+            background: #ffd700;
+            color: #000;
+        }
+
+        .error {
+            color: #ff3e3e;
+        }
+
+        .nav-row {
+            margin-top: 28px;
+            font-size: 0.75rem;
+        }
+
+        .nav-row a {
+            color: #444;
+            text-decoration: none;
+        }
+
+        .nav-row a:hover {
+            color: #00e5ff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="theory-container">
+        <h1>{{ t.xss_theory_h1 }}</h1>
+
+        <section>
+            <p>{{ t.xss_theory_p1 }}</p>
+            <p>{{ t.xss_theory_p2 }}</p>
+            <p>{{ t.xss_theory_p3 }}</p>
+            <p style="color:#666;font-size:0.85rem;">e.g. <code>&lt;script&gt;alert(1)&lt;/script&gt;</code> ·
+                <code>&lt;img src=x onerror=alert(1)&gt;</code> · <code>javascript:alert(1)</code>
+            </p>
+            <p>{{ t.xss_theory_p4 }}</p>
+            <p>{{ t.xss_theory_p5 }}</p>
+            <p>{{ t.xss_theory_p6 }}</p>
+        </section>
+
+        <div class="quiz-box">
+            <h3>{{ t.xss_theory_quiz_heading }}</h3>
+            {% if error %}<p class="error">{{ error }}</p>{% endif %}
+
+            <form method="POST" action="{{ url_for('xss.verify_xss_theory') }}">
+                <div class="q-block">
+                    <p class="q-num">XSS_QUIZ</p>
+                    <p>{{ t.xss_th_q1 }}</p>
+                    <label><input type="radio" name="q1" value="w1" required> {{ t.xss_th_q1o1 }}</label>
+                    <label><input type="radio" name="q1" value="corr"> {{ t.xss_th_q1o2 }}</label>
+                    <label><input type="radio" name="q1" value="w2"> {{ t.xss_th_q1o3 }}</label>
+                </div>
+
+                <div class="q-block">
+                    <p>{{ t.xss_th_q2 }}</p>
+                    <label><input type="radio" name="q2" value="corr" required> {{ t.xss_th_q2o1 }}</label>
+                    <label><input type="radio" name="q2" value="w1"> {{ t.xss_th_q2o2 }}</label>
+                    <label><input type="radio" name="q2" value="w2"> {{ t.xss_th_q2o3 }}</label>
+                </div>
+
+                <div class="q-block">
+                    <p>{{ t.xss_th_q3 }}</p>
+                    <label><input type="radio" name="q3" value="w1" required> {{ t.xss_th_q3o1 }}</label>
+                    <label><input type="radio" name="q3" value="corr"> {{ t.xss_th_q3o2 }}</label>
+                    <label><input type="radio" name="q3" value="w2"> {{ t.xss_th_q3o3 }}</label>
+                </div>
+
+                <div class="q-block">
+                    <p>{{ t.xss_th_q4 }}</p>
+                    <label><input type="radio" name="q4" value="w1" required> {{ t.xss_th_q4o1 }}</label>
+                    <label><input type="radio" name="q4" value="corr"> {{ t.xss_th_q4o2 }}</label>
+                    <label><input type="radio" name="q4" value="w2"> {{ t.xss_th_q4o3 }}</label>
+                </div>
+
+                <div class="q-block">
+                    <p>{{ t.xss_th_q5 }}</p>
+                    <label><input type="radio" name="q5" value="w1" required> {{ t.xss_th_q5o1 }}</label>
+                    <label><input type="radio" name="q5" value="corr"> {{ t.xss_th_q5o2 }}</label>
+                    <label><input type="radio" name="q5" value="w2"> {{ t.xss_th_q5o3 }}</label>
+                </div>
+
+                <div class="q-block">
+                    <p>{{ t.xss_th_q6 }}</p>
+                    <label><input type="radio" name="q6" value="w1" required> {{ t.xss_th_q6o1 }}</label>
+                    <label><input type="radio" name="q6" value="corr"> {{ t.xss_th_q6o2 }}</label>
+                    <label><input type="radio" name="q6" value="w2"> {{ t.xss_th_q6o3 }}</label>
+                </div>
+
+                <button type="submit" class="btn-hack">{{ t.xss_theory_submit }}</button>
+            </form>
+        </div>
+
+        <div class="nav-row">
+            <a href="{{ url_for('main.index') }}">[&lt;&lt; DASHBOARD]</a>
+        </div>
+    </div>
+</body>
+
+</html>

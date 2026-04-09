@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="{{ curr_lang }}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{{ t.sql_theory_html_title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            background: #050505;
+            color: #00ff41;
+            font-family: 'Courier New', monospace;
+            padding: 50px;
+            line-height: 1.6;
+        }
+
+        .theory-container {
+            max-width: 820px;
+            margin: 0 auto;
+            border: 1px solid #003b10;
+            padding: 32px;
+            background: #080808;
+        }
+
+        .theory-container h1 {
+            color: #fff;
+            font-size: 1.05rem;
+            letter-spacing: 2px;
+            margin-top: 0;
+        }
+
+        .theory-container section p {
+            margin: 0.85em 0;
+            color: #b0f5c0;
+        }
+
+        .theory-container code {
+            color: #ffd700;
+            background: #111;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .code-sample {
+            margin: 16px 0;
+            padding: 14px;
+            background: #000;
+            border-left: 3px solid #00ff41;
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        .code-sample .hi {
+            color: #fff;
+        }
+
+        .quiz-box {
+            margin-top: 36px;
+            border-top: 1px dashed #00ff41;
+            padding-top: 24px;
+        }
+
+        .quiz-box h3 {
+            color: #00ff41;
+            font-size: 0.95rem;
+        }
+
+        .q-block {
+            margin: 22px 0;
+            padding: 16px;
+            background: rgba(0, 255, 65, 0.04);
+            border-radius: 8px;
+            border: 1px solid #0a2a0f;
+        }
+
+        .q-block .q-num {
+            color: #666;
+            font-size: 0.75rem;
+            margin: 0 0 8px 0;
+        }
+
+        .q-block p {
+            margin: 0 0 10px 0;
+            color: #e0ffe8;
+        }
+
+        .q-block label {
+            display: block;
+            margin: 6px 0;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        .q-block input {
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        .btn-hack {
+            margin-top: 16px;
+            background: transparent;
+            border: 1px solid #00ff41;
+            color: #00ff41;
+            padding: 12px 24px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+        }
+
+        .btn-hack:hover {
+            background: #00ff41;
+            color: #000;
+        }
+
+        .error {
+            color: #ff3e3e;
+        }
+
+        .nav-row {
+            margin-top: 28px;
+            font-size: 0.75rem;
+        }
+
+        .nav-row a {
+            color: #444;
+            text-decoration: none;
+        }
+
+        .nav-row a:hover {
+            color: #00ff41;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="theory-container">
+        <h1>{{ t.sql_theory_h1 }}</h1>
+
+        <section>
+            <p>{{ t.sql_theory_p1 }}</p>
+            <p>{{ t.sql_theory_p2 }}</p>
+            <div class="code-sample">
+                <span>SELECT * FROM users WHERE login = '</span><span class="hi">$user_input</span><span>';</span>
+            </div>
+            <p>{{ t.sql_theory_p3 }}</p>
+            <p style="color:#666;font-size:0.85rem;">e.g. <code>' OR '1'='1' --</code></p>
+            <p>{{ t.sql_theory_p4 }}</p>
+            <p>{{ t.sql_theory_p5 }}</p>
+            <p>{{ t.sql_theory_p6 }}</p>
+            <p>{{ t.sql_theory_p7 }}</p>
+            <p>{{ t.sql_theory_p8 }}</p>
+        </section>
+
+        <div class="quiz-box">
+            <h3>{{ t.sql_theory_quiz_heading }}</h3>
+            {% if error %}<p class="error">{{ error }}</p>{% endif %}
+
+            <form method="POST" action="{{ url_for('sql.verify_sql_theory') }}">
+                <div class="q-block">
+                    <p class="q-num">SQL_QUIZ</p>
+                    <p>{{ t.sql_th_q1 }}</p>
+                    <label><input type="radio" name="q1" value="w1" required> {{ t.sql_th_q1o1 }}</label>
+                    <label><input type="radio" name="q1" value="corr"> {{ t.sql_th_q1o2 }}</label>
+                    <label><input type="radio" name="q1" value="w2"> {{ t.sql_th_q1o3 }}</label>
+                </div>
+
+                <div class="q-block">
+                    <p>{{ t.sql_th_q2 }}</p>
+                    <label><input type="radio" name="q2" value="w1" required> {{ t.sql_th_q2o1 }}</label>
+                    <label><input type="radio" name="q2" value="corr"> {{ t.sql_th_q2o2 }}</label>
+                    <label><input type="radio" name="q2" value="w2"> {{ t.sql_th_q2o3 }}</label>
+                </div>
+
+                <div class="q-block">
+                    <p>{{ t.sql_th_q3 }}</p>
+                    <label><input type="radio" name="q3" value="corr" required> {{ t.sql_th_q3o1 }}</label>
+                    <label><input type="radio" name="q3" value="w1"> {{ t.sql_th_q3o2 }}</label>
+                    <label><input type="radio" name="q3" value="w2"> {{ t.sql_th_q3o3 }}</label>
+                </div>
+
+                <div class="q-block">
+                    <p>{{ t.sql_th_q4 }}</p>
+                    <label><input type="radio" name="q4" value="w1" required> {{ t.sql_th_q4o1 }}</label>
+                    <label><input type="radio" name="q4" value="w2"> {{ t.sql_th_q4o2 }}</label>
+                    <label><input type="radio" name="q4" value="corr"> {{ t.sql_th_q4o3 }}</label>
+                </div>
+
+                <div class="q-block">
+                    <p>{{ t.sql_th_q5 }}</p>
+                    <label><input type="radio" name="q5" value="w1" required> {{ t.sql_th_q5o1 }}</label>
+                    <label><input type="radio" name="q5" value="w2"> {{ t.sql_th_q5o2 }}</label>
+                    <label><input type="radio" name="q5" value="corr"> {{ t.sql_th_q5o3 }}</label>
+                </div>
+
+                <div class="q-block">
+                    <p>{{ t.sql_th_q6 }}</p>
+                    <label><input type="radio" name="q6" value="corr" required> {{ t.sql_th_q6o1 }}</label>
+                    <label><input type="radio" name="q6" value="w1"> {{ t.sql_th_q6o2 }}</label>
+                    <label><input type="radio" name="q6" value="w2"> {{ t.sql_th_q6o3 }}</label>
+                </div>
+
+                <button type="submit" class="btn-hack">{{ t.sql_theory_submit }}</button>
+            </form>
+        </div>
+
+        <div class="nav-row">
+            <a href="{{ url_for('main.index') }}">[&lt;&lt; DASHBOARD]</a>
+        </div>
+    </div>
+</body>
+
+</html>

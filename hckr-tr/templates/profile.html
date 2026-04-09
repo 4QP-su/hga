@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <title>PROFILE // {{ user.username | upper }}</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #0a0a0a;
+      color: #00ff88;
+      font-family: 'Courier New', monospace;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .terminal {
+      width: 600px;
+      border: 1px solid #00ff88;
+      padding: 32px;
+      background: #0d0d0d;
+      box-shadow: 0 0 20px rgba(0, 255, 136, 0.1);
+    }
+
+    .term-header {
+      font-size: 11px;
+      color: #444;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #1a1a1a;
+      padding-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .user-info {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 30px;
+    }
+
+    .avatar-box {
+      width: 120px;
+      height: 120px;
+      border: 1px solid #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #111;
+      font-size: 40px;
+    }
+
+    .details {
+      flex: 1;
+    }
+
+    h1 {
+      font-size: 22px;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+      color: #00ff88;
+    }
+
+    .rank-tag {
+      display: inline-block;
+      font-size: 12px;
+      padding: 2px 8px;
+      background: #00ff88;
+      color: #0a0a0a;
+      margin-bottom: 15px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 30px;
+    }
+
+    .stat-item {
+      border: 1px solid #1a1a1a;
+      padding: 12px;
+      background: #111;
+    }
+
+    .stat-label {
+      font-size: 10px;
+      color: #666;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .stat-value {
+      font-size: 16px;
+      color: #fff;
+    }
+
+    .progress-container {
+      margin-bottom: 30px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 12px;
+      background: #111;
+      border: 1px solid #333;
+      position: relative;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: #00ff88;
+      transition: width 0.5s ease;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      flex: 1;
+      background: transparent;
+      border: 1px solid #00ff88;
+      color: #00ff88;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      padding: 10px;
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .btn:hover {
+      background: #00ff88;
+      color: #0a0a0a;
+    }
+
+    .btn.secondary {
+      border-color: #444;
+      color: #444;
+    }
+
+    .btn.secondary:hover {
+      border-color: #ff4444;
+      color: #ff4444;
+      background: transparent;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="terminal">
+    <div class="term-header">
+      <span>HACKLAB_OS // USER_PROFILE</span>
+      <span>LAST_LOGIN: {{ user.last_login or 'FIRST_TIME' }}</span>
+    </div>
+
+    <div class="user-info">
+      <div class="avatar-box">
+        {{ rank.icon }}
+      </div>
+      <div class="details">
+        <label style="font-size: 10px; color: #444;">IDENTIFIER ></label>
+        <h1>{{ user.username | upper }}</h1>
+        <div class="rank-tag">{{ rank.name | upper }}</div>
+        <div style="font-size: 12px; color: #666;">
+          EMAIL: {{ user.email }}<br>
+          MEMBER_SINCE: {{ user.created_at[:10] }}
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-label">Wallet Balance</div>
+        <div class="stat-value text-green">$ {{ user.balance }}</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Experience Points</div>
+        <div class="stat-value">{{ user.xp }} XP</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Levels Completed</div>
+        <div class="stat-value">{{ stats.total_completed }}</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Total Attempts</div>
+        <div class="stat-value">{{ stats.total_attempts }}</div>
+      </div>
+    </div>
+
+    <div class="progress-container">
+      <div class="progress-label">
+        <span>NEXT_RANK_PROGRESS</span>
+        <span>{{ rank.progress_pct }}%</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" style="width: {{ rank.progress_pct }}%;"></div>
+      </div>
+      <div style="font-size: 10px; color: #444; margin-top: 6px; text-align: right;">
+        NEXT_LEVEL_AT: {{ rank.next_xp or 'MAX_LEVEL' }} XP
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <a href="{{ url_for('main.index') }}" class="btn">> RETURN_TO_DASHBOARD</a>
+      <a href="{{ url_for('auth.logout') }}" class="btn secondary">[ LOGOUT ]</a>
+    </div>
+  </div>
+</body>
+
+</html>

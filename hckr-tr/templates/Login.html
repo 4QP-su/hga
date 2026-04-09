@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <title>LOGIN // HACKLAB</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #0a0a0a;
+      color: #00ff88;
+      font-family: 'Courier New', monospace;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .terminal {
+      width: 420px;
+      border: 1px solid #00ff88;
+      padding: 36px 32px;
+      background: #0d0d0d;
+    }
+
+    .term-header {
+      font-size: 11px;
+      color: #444;
+      margin-bottom: 24px;
+      border-bottom: 1px solid #1a1a1a;
+      padding-bottom: 12px;
+    }
+
+    h1 {
+      font-size: 18px;
+      letter-spacing: 3px;
+      margin-bottom: 28px;
+      color: #00ff88;
+    }
+
+    .flash-list {
+      list-style: none;
+      margin-bottom: 16px;
+    }
+
+    .flash-error {
+      color: #ff4444;
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    .flash-success {
+      color: #00ff88;
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    .flash-warning {
+      color: #ffaa00;
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    .field {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      font-size: 11px;
+      color: #666;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+
+    input {
+      width: 100%;
+      background: #111;
+      border: 1px solid #333;
+      border-bottom-color: #00ff88;
+      color: #00ff88;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      padding: 10px 12px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus {
+      border-color: #00ff88;
+    }
+
+    .btn {
+      width: 100%;
+      background: transparent;
+      border: 1px solid #00ff88;
+      color: #00ff88;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      letter-spacing: 2px;
+      padding: 12px;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .btn:hover {
+      background: #00ff88;
+      color: #0a0a0a;
+    }
+
+    .link-row {
+      margin-top: 20px;
+      font-size: 12px;
+      color: #444;
+      text-align: center;
+    }
+
+    .link-row a {
+      color: #00ff88;
+      text-decoration: none;
+    }
+
+    .link-row a:hover {
+      text-decoration: underline;
+    }
+
+    .lang-row {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 11px;
+      color: #333;
+    }
+
+    .lang-row a {
+      color: #555;
+      text-decoration: none;
+      margin: 0 6px;
+    }
+
+    .lang-row a:hover {
+      color: #00ff88;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="terminal">
+    <div class="term-header">HACKLAB_OS v2.6 // SECURE_TERMINAL // {{ curr_lang | upper }}</div>
+    <h1>{{ t.login_title | upper }}</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <ul class="flash-list">
+      {% for cat, msg in messages %}
+      <li class="flash-{{ cat }}">[ {{ msg }} ]</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+      <div class="field">
+        <label>{{ t.username_label | upper }} ></label>
+        <input type="text" name="username" autocomplete="username" required autofocus>
+      </div>
+      <div class="field">
+        <label>{{ t.password_label | upper }} ></label>
+        <input type="password" name="password" autocomplete="current-password" required>
+      </div>
+      <button class="btn" type="submit">> {{ t.login_btn | upper }}</button>
+    </form>
+
+    <div class="link-row">
+      {{ t.no_account }} <a href="{{ url_for('auth.register') }}">{{ t.register_btn }}</a>
+    </div>
+
+    <div class="lang-row">
+      <a href="{{ url_for('main.set_lang', lang='ru') }}">RU</a>
+      <a href="{{ url_for('main.set_lang', lang='kz') }}">KZ</a>
+      <a href="{{ url_for('main.set_lang', lang='en') }}">EN</a>
+    </div>
+  </div>
+</body>
+
+</html>

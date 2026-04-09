@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="{{ curr_lang }}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>SQL_EXPLOIT_SYSTEM v4.0</title>
+    <style>
+        :root {
+            --primary-green: #00ff41;
+            --dim-green: #003b10;
+            --deep-bg: #050505;
+            --panel-bg: #080808;
+            --card-bg: #0d0d0d;
+            --cyan-accent: #00e5ff;
+            --warning-gold: #ffd700;
+            --error-red: #ff3e3e;
+        }
+
+        body {
+            background-color: var(--deep-bg);
+            color: var(--primary-green);
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ЛЕВАЯ ПАНЕЛЬ - теперь со скроллом, если текст длинный */
+        .side-panel {
+            width: 350px;
+            background: var(--panel-bg);
+            border-right: 1px solid var(--dim-green);
+            display: flex;
+            flex-direction: column;
+            padding: 25px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+        }
+
+        /* БЛОК МИССИИ - ЖИРНЫЙ И ДЛИННЫЙ */
+        .mission-container {
+            border-left: 4px solid var(--warning-gold);
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.05), transparent);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .mission-text {
+            font-size: 1rem;
+            line-height: 1.8;
+            color: #ccc;
+            white-space: pre-line;
+            /* Чтобы переносы строк из базы работали */
+        }
+
+        /* ОСНОВНАЯ ОБЛАСТЬ */
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid rgba(0, 255, 65, 0.1);
+            border-radius: 12px;
+            padding: 30px;
+            width: 100%;
+            max-width: 850px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+            margin-bottom: 25px;
+        }
+
+        /* ИНПУТЫ И ПОДСКАЗКА ВНУТРИ */
+        .input-wrapper {
+            position: relative;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .input-box {
+            background: #000;
+            border: 1px solid var(--dim-green);
+            padding: 15px;
+            padding-right: 120px;
+            color: var(--primary-green);
+            width: 100%;
+            box-sizing: border-box;
+            font-family: inherit;
+            border-radius: 6px;
+        }
+
+        .hint-overlay-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--dim-green);
+            color: var(--warning-gold);
+            border: 1px solid var(--warning-gold);
+            padding: 5px 10px;
+            font-size: 0.7rem;
+            text-decoration: none;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .btn-execute {
+            margin-top: 8px;
+            padding: 14px 20px;
+            box-sizing: border-box;
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            background: var(--dim-green);
+            color: var(--primary-green);
+            border: 2px solid var(--primary-green);
+            border-radius: 6px;
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-execute:hover {
+            background: rgba(0, 255, 65, 0.12);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.25);
+        }
+
+        .btn-execute:active {
+            transform: translateY(1px);
+        }
+
+        .btn-surrender-fixed {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background: rgba(10, 0, 0, 0.9);
+            border: 1px solid var(--error-red);
+            color: var(--error-red);
+            padding: 12px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.8rem;
+            z-index: 1000;
+            transition: 0.3s;
+        }
+
+        .btn-surrender-fixed:hover {
+            background: var(--error-red);
+            color: #000;
+        }
+
+        /* ТАБЛИЦА */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .data-table th {
+            color: var(--cyan-accent);
+            text-align: left;
+            padding: 12px;
+            border-bottom: 2px solid #222;
+            font-size: 0.8rem;
+        }
+
+        .data-table td {
+            padding: 12px;
+            border-bottom: 1px solid #111;
+            color: #aaa;
+            font-size: 0.85rem;
+        }
+
+        h3 {
+            color: #fff;
+            letter-spacing: 2px;
+            margin-top: 0;
+            font-size: 0.9rem;
+        }
+
+        .hint-panel-card {
+            border-color: var(--warning-gold) !important;
+            box-shadow: 0 0 24px rgba(255, 215, 0, 0.08);
+        }
+
+        .hint-panel-card h4 {
+            margin: 0 0 12px 0;
+            color: var(--warning-gold);
+            font-size: 0.8rem;
+        }
+
+        .hint-panel-card .hint-body {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #e0e0e0;
+            line-height: 1.5;
+            white-space: pre-line;
+        }
+
+        .sql-win-card {
+            border: 2px solid var(--primary-green) !important;
+            background: rgba(0, 255, 65, 0.06);
+            text-align: center;
+        }
+
+        .sql-win-card h3 {
+            color: var(--primary-green);
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .sql-win-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 22px;
+        }
+
+        .btn-sql-nav {
+            padding: 12px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.8rem;
+            border: 2px solid var(--primary-green);
+            color: var(--primary-green);
+            transition: 0.2s;
+        }
+
+        .btn-sql-nav:hover {
+            background: rgba(0, 255, 65, 0.12);
+        }
+
+        .btn-sql-nav-primary {
+            background: var(--primary-green);
+            color: #000;
+        }
+
+        .btn-sql-nav-primary:hover {
+            filter: brightness(1.08);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="side-panel">
+        <div style="font-size: 1.4rem; font-weight: bold; margin-bottom: 20px; color: #fff;">
+            SQL_NODE_<span style="color: var(--primary-green);">0{{ level.id }}</span>
+        </div>
+
+        <div class="mission-container">
+            <h3 style="color: var(--warning-gold); font-size: 0.75rem;">> {{ t.mission_obj }}</h3>
+            <div class="mission-text">
+                {{ level.situation }}
+                <p
+                    style="margin-top: 15px; font-size: 0.8rem; color: #666; border-top: 1px solid #222; padding-top: 10px;">
+                    [АНАЛИЗ]: Обнаружена точка входа в {{ "департамент управления персоналом" if level.id < 3
+                        else "финансовый шлюз компании" }}. Используйте методы внедрения кода для получения
+                        несанкционированного доступа к записям. </p>
+            </div>
+        </div>
+
+        <div style="margin-top: 20px; font-size: 0.8rem;">
+            <span style="color: #444;">ТЕКУЩИЙ_БАЛАНС:</span> <span style="color: var(--warning-gold);">${{
+                current_user.balance }}</span>
+        </div>
+    </div>
+
+    <div class="main-content">
+
+        <div class="card">
+            <h3>SYSTEM_LOG</h3>
+            <div id="log-output"
+                style="background: #000; padding: 15px; border-radius: 6px; font-size: 0.85rem; min-height: 100px;">
+                <div style="color: #444;">> Waiting for payload...</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>{{ t.auth_gate }}</h3>
+            <form method="POST" id="hack-form">
+                <div style="position: relative; width: 100%; margin-bottom: 15px;">
+                    <input type="text" name="username" class="input-box" placeholder="PAYLOAD" required
+                        style="width: 100%; padding-right: 120px;">
+
+                    {% if not hint_bought and not is_already_completed %}
+                    <a href="{{ url_for('modules.buy_hint', category='sql', level_id=level.id) }}"
+                        onclick="return confirm({{ t.hint_buy_confirm | tojson }});"
+                        style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: var(--dim-green); border: 1px solid var(--warning-gold); color: var(--warning-gold); padding: 5px 10px; font-size: 0.7rem; text-decoration: none; border-radius: 4px;">
+                        {{ t.get_hint_label.split('(')[0] }}
+                    </a>
+                    {% endif %}
+                </div>
+
+                <input type="password" name="password" class="input-box" placeholder="PASSWORD">
+                <button type="submit" class="btn-execute" style="width: 100%;">{{ t.btn_exploit }}</button>
+            </form>
+        </div>
+
+        {% if rows %}
+        <div class="card" style="border-color: var(--cyan-accent);">
+            <h3>> [ DATABASE_EXTRACT: {{ "COMPANY_STAFF" if level.id < 4 else "SECURITY_LOGS" }} ]</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                {% if level.id < 4 %} <th>UID</th>
+                                    <th>FULL_NAME</th>
+                                    <th>POSITION</th>
+                                    <th>STATUS</th>
+                                    {% else %}
+                                    <th>TIMESTAMP</th>
+                                    <th>ACTION</th>
+                                    <th>TARGET_ID</th>
+                                    <th>RESULT</th>
+                                    {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in rows %}
+                            <tr>
+                                {% for item in row %}
+                                <td>{{ item }}</td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+        </div>
+        {% endif %}
+
+        {% if is_already_completed %}
+        <div class="card sql-win-card">
+            <h3>&gt;&gt; {{ t.access_granted_text }}</h3>
+            <p style="margin: 0; color: #aaa; font-size: 0.85rem;">{{ t.sql_win_rewards }}</p>
+            <div class="sql-win-actions">
+                <a href="{{ url_for('sql.sql_labs') }}" class="btn-sql-nav">{{ t.return_to_hub }}</a>
+                {% if level.id < 6 %} <a href="{{ url_for('sql.sql_level', level_id=level.id + 1) }}"
+                    class="btn-sql-nav btn-sql-nav-primary">{{ t.next_level_btn }}</a>
+                    {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if hint_bought %}
+        <div class="card hint-panel-card">
+            <h4>{{ t.hint_panel_title }}</h4>
+            <p class="hint-body">{{ level.hint }}</p>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if not is_already_completed %}
+    <a href="{{ url_for('modules.surrender', category='sql', level_id=level.id) }}" class="btn-surrender-fixed"
+        onclick="return confirm({{ t.surrender_confirm | tojson }});">
+        {{ t.surrender_btn }}
+    </a>
+    {% endif %}
+
+</body>
+
+</html>
